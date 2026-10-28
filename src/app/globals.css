@@ -1,26 +1,168 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-bosque-950: #062724;
+  --color-bosque-900: #0a3833;
+  --color-bosque-800: #0e4a44;
+  --color-bosque-700: #145c54;
+  --color-bosque-600: #1b6f65;
+  --color-bosque-200: #bfd8d3;
+  --color-bosque-100: #dcebe8;
+  --color-bosque-50: #eef5f3;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-maiz-400: #f2b544;
+  --color-maiz-100: #fbedcd;
+  --color-maiz-800: #7a520b;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-papel: #f3f5f4;
+  --color-tinta: #102d29;
+  --color-niebla: #5d706c;
+  --color-linea: #dde4e2;
+  --color-alerta: #c4473a;
+
+  --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-cortina: cubic-bezier(0.77, 0, 0.18, 1);
+
+  --animate-progreso: progreso var(--slide-ms, 7000ms) linear forwards;
+  --animate-ken-burns: ken-burns 12s cubic-bezier(0.2, 0, 0.4, 1) forwards;
+
+  @keyframes progreso {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes ken-burns {
+    from {
+      transform: scale(1.02);
+    }
+    to {
+      transform: scale(1.1);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+  scroll-padding-top: 6rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    scroll-behavior: smooth;
+  }
+}
+
+/* En una capa para que utilidades como outline-none puedan sobrescribirlo */
+@layer base {
+  body {
+    background: var(--color-papel);
+    color: var(--color-tinta);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background: var(--color-maiz-400);
+    color: var(--color-bosque-950);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-maiz-400);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns {
+    animation: none;
+  }
+}
+
+/* Transiciones entre páginas (React <ViewTransition>) */
+
+::view-transition-group(.morph) {
+  animation-duration: 700ms;
+  animation-timing-function: cubic-bezier(0.77, 0, 0.18, 1);
+}
+
+::view-transition-image-pair(.morph) {
+  animation-name: via-blur;
+}
+
+@keyframes via-blur {
+  35% {
+    filter: blur(4px);
+  }
+}
+
+::view-transition-old(.capa) {
+  animation: 160ms ease-in both fade reverse;
+}
+
+::view-transition-new(.capa) {
+  animation: 360ms ease-out 360ms both fade;
+}
+
+::view-transition-old(.nav-forward) {
+  --slide-offset: -48px;
+  animation:
+    160ms ease-in both fade reverse,
+    420ms cubic-bezier(0.77, 0, 0.18, 1) both slide reverse;
+}
+
+::view-transition-new(.nav-forward) {
+  --slide-offset: 48px;
+  animation:
+    260ms ease-out 160ms both fade,
+    420ms cubic-bezier(0.16, 1, 0.3, 1) both slide;
+}
+
+::view-transition-old(.nav-back) {
+  --slide-offset: 48px;
+  animation:
+    160ms ease-in both fade reverse,
+    420ms cubic-bezier(0.77, 0, 0.18, 1) both slide reverse;
+}
+
+::view-transition-new(.nav-back) {
+  --slide-offset: -48px;
+  animation:
+    260ms ease-out 160ms both fade,
+    420ms cubic-bezier(0.16, 1, 0.3, 1) both slide;
+}
+
+@keyframes fade {
+  from {
+    filter: blur(3px);
+    opacity: 0;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide {
+  from {
+    translate: var(--slide-offset) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }

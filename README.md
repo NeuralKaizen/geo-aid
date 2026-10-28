@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GeoAid
 
-## Getting Started
+Plataforma para ver en un solo lugar qué necesita cada zona afectada por el terremoto del 10 de agosto de 2026, qué ayudas se están recogiendo y a dónde están llegando. Sirve al gobierno, a las fundaciones y a la Cruz Roja para coordinar entregas sin repetir ayudas, y a la gente para saber qué donar, dónde ayudar y a dónde fue lo que dio.
 
-First, run the development server:
+## Estado
+
+- **Inicio**: barra de navegación, hero en carrusel por temas, donación rápida y la sección "Cómo ayudar".
+- **Secciones** (Noticias, Donaciones, Voluntariado, Centros de acopio, Desaparecidos, Donar, Necesito ayuda, Mi portal): páginas en construcción con su encabezado y la transición desde el hero.
+
+Las cifras del hero vienen del reporte de la UNGRD del 10 de octubre de 2026. Los valores "Donación sugerida $85.000" y "Duración de un turno 4 horas" son de ejemplo. El contenido vive en `src/content/site.ts`.
+
+## Desarrollo
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js 16 (App Router, Cache Components) y React 19.3
+- Tailwind CSS 4: paleta y curvas de animación en `src/app/globals.css`
+- Motion 14 para las animaciones dentro de cada página
+- `<ViewTransition>` de React para las transiciones entre páginas: la foto del hero se transforma en el encabezado de su sección
 
-## Learn More
+## Animaciones
 
-To learn more about Next.js, take a look at the following resources:
+| Dónde | Qué pasa |
+| --- | --- |
+| Hero | La foto nueva entra como cortina desde el lado al que se navega; la anterior se corre y se oscurece. El titular sube palabra por palabra. La barra de progreso se puede pausar, y se detiene sola fuera de pantalla, con la pestaña oculta o con foco de teclado. |
+| Barra superior | Al bajar, la barra transparente se convierte en una barra blanca flotante con un resaltado que sigue al cursor. |
+| Cómo ayudar | La foto de la opción elegida crece desde su píldora hasta la tarjeta, y la anterior se encoge a píldora. Funciona con flechas, clic, teclado y deslizando el dedo. |
+| Así llega tu ayuda | La línea entre los pasos se dibuja una sola vez, al entrar en pantalla. |
+| Entre páginas | La foto del hero hace un morph hacia el banner de la sección y los textos se desvanecen por encima. El resto del contenido se desliza según la dirección de la navegación. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Con "reducir movimiento" activado en el sistema, el carrusel arranca en pausa y las transiciones se desactivan.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Créditos
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Las fotos son marcadores tomados de Wikimedia Commons. Autores y licencias en [IMAGE_CREDITS.md](IMAGE_CREDITS.md).
