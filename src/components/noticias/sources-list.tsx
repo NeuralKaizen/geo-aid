@@ -1,44 +1,30 @@
 import { serif } from "@/components/noticias/fonts";
-import { fuentes } from "@/content/noticias";
+import { eyebrow } from "@/components/ui/styles";
+import { listaFuentes } from "@/content/noticias";
 
-/** Notas al pie: las citas completas, numeradas en el orden en que aparecen en la página. */
+/** Todas las fuentes reales del portal, y qué no tiene fuente y por qué. */
 export function SourcesList() {
   return (
-    <section id="fuentes" aria-labelledby="fuentes-titulo" className="mx-auto max-w-[1240px] px-5 pt-24 sm:px-8 lg:px-10 lg:pt-32">
-      <div className="grid gap-8 border-t-2 border-tinta pt-5 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
+    <section aria-labelledby="fuentes" className="mx-auto mt-20 max-w-[1240px] px-5 sm:px-8 lg:mt-24 lg:px-10">
+      <div className="grid gap-8 border-t border-linea pt-10 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
         <div>
-          <h2
-            id="fuentes-titulo"
-            className={`${serif} text-[clamp(2rem,3vw,2.6rem)] font-normal leading-[1.05] tracking-[-0.02em] text-tinta`}
-          >
-            Notas y fuentes
+          <p className={eyebrow}>Fuentes</p>
+          <h2 id="fuentes" className={`${serif} mt-2 text-[28px] font-medium leading-tight tracking-[-0.015em] text-tinta`}>
+            De dónde sale cada noticia
           </h2>
-          <p className="mt-3 max-w-sm text-[14.5px] leading-relaxed text-niebla">
-            Cada dato de esta página remite a una de estas notas. Las citas van tal como las reunió el equipo de GeoAid.
+          <p className="mt-3 text-[14px] leading-relaxed text-niebla">
+            Las noticias del terremoto y de La Guajira salen de estas fuentes. El cierre del registro, el 4 de septiembre, viene
+            del diagnóstico con el que nació GeoAid. Las lluvias del Pacífico y los incendios de la Orinoquía son de ejemplo.
           </p>
         </div>
-
-        <div>
-          <ol className="gap-x-10 sm:columns-2">
-            {fuentes.map((fuente, i) => (
-              <li
-                key={fuente.id}
-                id={`fuente-${fuente.id}`}
-                className="-mx-3 grid break-inside-avoid grid-cols-[2rem_minmax(0,1fr)] gap-2 rounded-xl px-3 py-4"
-              >
-                <span className={`${serif} text-[1.6rem] leading-none text-tinta tabular-nums`}>{i + 1}</span>
-                <p className="border-b border-tinta/10 pb-4 text-[14.5px] leading-relaxed text-tinta/85">
-                  <span className="font-semibold text-tinta">{fuente.medio}</span> ({fuente.fecha}).{" "}
-                  <cite className={`${serif} text-[16px] italic`}>{fuente.titulo}</cite>.
-                </p>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-4 max-w-2xl text-[13px] leading-relaxed text-niebla">
-            El cierre del Registro Único de Damnificados, el 4 de septiembre, hace parte del diagnóstico con el que nació
-            GeoAid y no tiene una nota de prensa en esta lista.
-          </p>
-        </div>
+        <ol className="grid gap-x-10 gap-y-4 md:grid-cols-2">
+          {listaFuentes.map((fuente) => (
+            <li key={`${fuente.medio}-${fuente.fecha}`} className="border-t border-linea pt-3 text-[13.5px] leading-relaxed text-niebla">
+              <strong className="font-semibold text-tinta">{fuente.medio}</strong> ({fuente.fecha}).{" "}
+              <cite className={`${serif} text-[15px] italic text-tinta/80`}>{fuente.titulo}</cite>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

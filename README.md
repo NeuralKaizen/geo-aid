@@ -20,7 +20,7 @@ Cada página tiene su propia forma según lo que trata, sin dejar de parecer Geo
 
 | Ruta | Qué es | La pieza central |
 | --- | --- | --- |
-| `/noticias` | **Bitácora del terremoto.** Una primera plana de diario, con titulares en serif (Newsreader, solo en esta página). | Cronología de 8 hitos reales con notas al pie: el eje se llena con el scroll y se filtra por tema. Arriba, las cifras oficiales con su fuente y el contador de días desde el sismo. |
+| `/noticias` | **Portal de emergencias.** Puede seguir varias crisis a la vez, con titulares en serif (Newsreader, solo en esta página). | Las emergencias como pestañas, cada una con su estado y su contador de días. La elegida muestra qué está pasando, sus cifras con fuente, cómo ayudar, sus noticias por tema y una línea de días donde cada noticia es un punto. Cada noticia se abre completa, con qué significa para ti y su fuente. El enlace guarda la emergencia y la noticia abiertas (`?emergencia=` y `?noticia=`). |
 | `/donaciones` | **Tablero de necesidades.** Lo que le falta a cada zona y cuánto ya llegó. | 14 zonas con urgencia por cobertura, filtros por tipo y departamento, y orden que reacomoda las tarjetas. También "A dónde va cada peso" y el buscador de seguimiento por código. |
 | `/donar` | **Un pago tranquilo.** Cuatro pasos: destino, monto, datos y método. | Un recibo de papel que se llena mientras eliges y, al confirmar, se imprime como comprobante con su código. Lee `?zona=`, `?destino=` y `?monto=`. |
 | `/voluntariado` | **Una agenda viva.** Los próximos 7 días desde hoy. | Turnos en una línea de tiempo con los cupos como trazos. "Tomar este turno" abre un panel con el formulario y termina en la vista previa del mensaje de texto. |
@@ -43,7 +43,7 @@ Con "reducir movimiento" activado en el sistema, la pantalla de carga solo se de
 
 ## Datos
 
-Lo **real** viene de las fuentes del planteamiento del problema, listadas en el footer, en `/noticias` y en `src/content/site.ts`: las cifras de la UNGRD, la cronología y la guía de la Cruz Roja sobre qué no donar.
+Lo **real** viene de las fuentes del planteamiento del problema, listadas en el footer, en `/noticias` y en `src/content/site.ts`: las cifras de la UNGRD, las noticias del terremoto y de La Guajira, y la guía de la Cruz Roja sobre qué no donar.
 
 Lo **de ejemplo** está marcado como tal en cada página:
 
@@ -52,6 +52,7 @@ Lo **de ejemplo** está marcado como tal en cada página:
 - Los puntos de acopio, su capacidad y lo que reciben.
 - Los reportes de personas desaparecidas (nombres ficticios, sin fotos) y las cifras de reencuentros.
 - La historia de Laura en Mi portal y el seguimiento de la donación GA-24817.
+- Las emergencias de lluvias en el Pacífico e incendios en la Orinoquía, con sus cifras y noticias.
 - Las tarjetas del hero, salvo la de noticias.
 
 Cada flujo donde alguien pide ayuda, reporta, se inscribe o dona dice antes de enviar y en la confirmación que es un prototipo, que la información no llega a ninguna entidad y que en una emergencia hay que llamar al 123.
