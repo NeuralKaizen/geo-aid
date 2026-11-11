@@ -113,7 +113,65 @@ export type HeroSlide = {
   primary: Action;
   secondary: Action;
   photo: Photo;
+  panel: HeroPanel;
 };
+
+/*
+ * Tarjeta que acompaña a cada tema del hero. Todas comparten la misma estructura (etiqueta, contenido, enlace y una
+ * nota sobre el origen de los datos), pero cada tema muestra su información con una pieza distinta.
+ */
+export type PointStatus = "abierto" | "casi-lleno" | "lleno";
+
+type PanelBase = {
+  label: string;
+  context: string;
+  link: Action;
+  /** origen de los datos, va debajo de la tarjeta */
+  caption: string;
+};
+
+export type HeroPanel = PanelBase &
+  (
+    | { kind: "noticias"; items: { source: string; date: string; title: string }[] }
+    | {
+        kind: "necesidad";
+        zone: string;
+        place: string;
+        need: string;
+        delivered: number;
+        goal: number;
+        /** qué cuenta la barra, p. ej. "kits entregados" */
+        unit: string;
+        impact: { amount: string; text: string };
+        more: string;
+      }
+    | {
+        kind: "turno";
+        day: { weekday: string; date: string; month: string };
+        task: string;
+        place: string;
+        hours: string;
+        detail: string;
+        taken: number;
+        total: number;
+        more: string;
+      }
+    | {
+        kind: "puntos";
+        open: number;
+        neighbors: number;
+        points: { type: "casa" | "comunal" | "oficial"; name: string; detail: string; status: PointStatus }[];
+        register: Action;
+      }
+    | {
+        kind: "reencuentros";
+        text: string;
+        week: { day: string; count: number }[];
+        stats: { value: string; label: string }[];
+      }
+  );
+
+const exampleCaption = "Datos de ejemplo para mostrar cómo funcionará.";
 
 export const heroSlides: HeroSlide[] = [
   {
@@ -126,6 +184,19 @@ export const heroSlides: HeroSlide[] = [
     primary: { label: "Ver noticias", href: "/noticias" },
     secondary: { label: "Cómo ayudar", href: "#como-ayudar" },
     photo: photos.noticias,
+    panel: {
+      kind: "noticias",
+      label: "En las noticias",
+      context: "Agosto a octubre",
+      // Titulares de las fuentes del planteamiento del problema (ver `sources`), del más reciente al más antiguo
+      items: [
+        { source: "Infobae", date: "10 oct", title: "La Defensoría pidió reabrir el registro de damnificados" },
+        { source: "Vanguardia", date: "5 oct", title: "La Procuraduría pide a la UNGRD agilizar las ayudas" },
+        { source: "Urna de Cristal", date: "31 ago", title: "Más de 300 muertos y 260.000 damnificados" },
+      ],
+      link: { label: "Todas las noticias", href: "/noticias" },
+      caption: "Titulares de las fuentes que citamos al final de la página.",
+    },
   },
   {
     slug: "donaciones",
@@ -137,6 +208,21 @@ export const heroSlides: HeroSlide[] = [
     primary: { label: "Donar ahora", href: "/donar" },
     secondary: { label: "Necesidades por zona", href: "/donaciones" },
     photo: photos.donaciones,
+    panel: {
+      kind: "necesidad",
+      label: "Necesidad abierta",
+      context: "Hoy, 9:40 a. m.",
+      zone: "Vereda La Palma",
+      place: "Morales, Cauca",
+      need: "86 familias siguen en refugio temporal y les faltan 120 kits de agua y aseo.",
+      delivered: 220,
+      goal: 340,
+      unit: "kits entregados",
+      impact: { amount: "$45.000", text: "alcanzan para el kit de una familia por una semana" },
+      more: "1 de 14 zonas",
+      link: { label: "Aportar a esta zona", href: "/donar" },
+      caption: exampleCaption,
+    },
   },
   {
     slug: "voluntariado",
@@ -148,6 +234,21 @@ export const heroSlides: HeroSlide[] = [
     primary: { label: "Quiero ser voluntario", href: "/voluntariado" },
     secondary: { label: "Ver turnos abiertos", href: "/voluntariado" },
     photo: photos.voluntariado,
+    panel: {
+      kind: "turno",
+      label: "Próximo turno",
+      context: "Bogotá",
+      day: { weekday: "Sáb", date: "14", month: "Nov" },
+      task: "Clasificar y empacar donaciones",
+      place: "Centro de acopio Norte",
+      hours: "8:00 a. m. a 12:00 m.",
+      detail: "No necesitas experiencia: al llegar te explican todo.",
+      taken: 18,
+      total: 30,
+      more: "6 turnos esta semana",
+      link: { label: "Tomar este turno", href: "/voluntariado" },
+      caption: exampleCaption,
+    },
   },
   {
     slug: "centros-de-acopio",
@@ -159,6 +260,21 @@ export const heroSlides: HeroSlide[] = [
     primary: { label: "Buscar un centro", href: "/centros-de-acopio" },
     secondary: { label: "Qué no donar", href: "#como-ayudar" },
     photo: photos.centros,
+    panel: {
+      kind: "puntos",
+      label: "Puntos de acopio",
+      context: "Popayán",
+      open: 38,
+      neighbors: 21,
+      points: [
+        { type: "casa", name: "Garaje de los Muñoz", detail: "Bolívar · agua y pañales", status: "abierto" },
+        { type: "comunal", name: "Salón comunal Esmeralda", detail: "Alimentos no perecederos", status: "casi-lleno" },
+        { type: "oficial", name: "Coliseo municipal", detail: "Punto oficial de la alcaldía", status: "lleno" },
+      ],
+      register: { label: "¿Abriste uno? Regístralo", href: "/centros-de-acopio" },
+      link: { label: "Ver el mapa", href: "/centros-de-acopio" },
+      caption: exampleCaption,
+    },
   },
   {
     slug: "desaparecidos",
@@ -170,6 +286,27 @@ export const heroSlides: HeroSlide[] = [
     primary: { label: "Consultar reportes", href: "/desaparecidos" },
     secondary: { label: "Reportar a una persona", href: "/desaparecidos" },
     photo: photos.desaparecidos,
+    panel: {
+      kind: "reencuentros",
+      label: "Reencuentros",
+      context: "Últimos 7 días",
+      text: "familias volvieron a encontrarse",
+      week: [
+        { day: "J", count: 4 },
+        { day: "V", count: 7 },
+        { day: "S", count: 5 },
+        { day: "D", count: 8 },
+        { day: "L", count: 6 },
+        { day: "M", count: 4 },
+        { day: "Hoy", count: 3 },
+      ],
+      stats: [
+        { value: "412", label: "reportes activos" },
+        { value: "1.208", label: "reencuentros desde agosto" },
+      ],
+      link: { label: "Cómo verificamos cada reporte", href: "/desaparecidos" },
+      caption: exampleCaption,
+    },
   },
 ];
 

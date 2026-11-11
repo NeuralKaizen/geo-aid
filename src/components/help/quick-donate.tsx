@@ -9,31 +9,18 @@ import { easeSalida } from "@/lib/motion";
 const pesos = new Intl.NumberFormat("es-CO");
 const presets = [20000, 50000, 100000];
 
-const tones = {
-  glass: {
-    // Tinte oscuro para que el texto se lea igual sobre un cielo claro que sobre escombros
-    card: "bg-bosque-950/60 text-white ring-1 ring-white/15 backdrop-blur-lg",
-    muted: "text-white/65",
-    field: "bg-white/10 ring-1 ring-white/15 focus-within:ring-white/60 hover:bg-white/15",
-    chip: "text-white/80 ring-1 ring-white/20 hover:ring-white/50",
-    chipOn: "text-bosque-950",
-    pill: "bg-white",
-    option: "text-tinta",
-  },
-  light: {
-    card: "bg-white text-tinta ring-1 ring-linea shadow-[0_28px_60px_-34px_rgba(0,0,0,0.6)]",
-    muted: "text-niebla",
-    field: "bg-papel ring-1 ring-linea focus-within:ring-bosque-600 hover:ring-bosque-200",
-    chip: "text-tinta/75 ring-1 ring-linea hover:ring-bosque-200",
-    chipOn: "text-white",
-    pill: "bg-bosque-800",
-    option: "text-tinta",
-  },
+const tone = {
+  card: "bg-white text-tinta ring-1 ring-linea shadow-[0_28px_60px_-34px_rgba(0,0,0,0.6)]",
+  muted: "text-niebla",
+  field: "bg-papel ring-1 ring-linea focus-within:ring-bosque-600 hover:ring-bosque-200",
+  chip: "text-tinta/75 ring-1 ring-linea hover:ring-bosque-200",
+  chipOn: "text-white",
+  pill: "bg-bosque-800",
+  option: "text-tinta",
 };
 
-export function QuickDonate({ variant }: { variant: "glass" | "light" }) {
+export function QuickDonate() {
   const [amount, setAmount] = useState(50000);
-  const tone = tones[variant];
   const pillId = useId();
 
   return (

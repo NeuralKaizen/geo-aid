@@ -7,7 +7,7 @@ import { motion, useScroll, useTransform, type MotionValue } from "motion/react"
 import { ArrowRight, MoveRight } from "lucide-react";
 import { helpOptions, type HelpOption } from "@/content/site";
 import { useMediaQuery } from "@/lib/use-media-query";
-import { QuickDonate } from "@/components/hero/quick-donate";
+import { QuickDonate } from "@/components/help/quick-donate";
 
 type Layout = { travel: number; viewport: number; height: number; centers: number[] };
 
@@ -63,7 +63,7 @@ export function HowToHelp() {
               <Intro pinned={false} />
             </div>
             <div className="mx-auto mb-12 mt-10 max-w-md px-4">
-              <QuickDonate variant="light" />
+              <QuickDonate />
             </div>
           </>
         )}

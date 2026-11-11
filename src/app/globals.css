@@ -14,6 +14,9 @@
   --color-maiz-100: #fbedcd;
   --color-maiz-800: #7a520b;
 
+  /* Estado "abierto" sobre fondos oscuros */
+  --color-brote-300: #8fd9ad;
+
   --color-papel: #f3f5f4;
   --color-tinta: #102d29;
   --color-niebla: #5d706c;

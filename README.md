@@ -6,7 +6,7 @@ Plataforma para ver en un solo lugar qué necesita cada zona afectada por el ter
 
 La página se arma como hojas que suben una sobre otra mientras haces scroll:
 
-1. **Hero**: carrusel a pantalla completa por tema (noticias, donaciones, voluntariado, centros de acopio, desaparecidos) con donación rápida. Al bajar, la hoja de "Cómo ayudar" sube encima y la foto se encoge y se oscurece.
+1. **Hero**: carrusel a pantalla completa por tema (noticias, donaciones, voluntariado, centros de acopio, desaparecidos). A la derecha, una tarjeta de vidrio cambia con cada tema: titulares de prensa, una necesidad abierta con lo que alcanza un aporte, el próximo turno de voluntariado, los puntos de acopio de una ciudad (incluidos los que abren vecinos en sus garajes y casas) y los reencuentros de la semana. El carrusel se pausa mientras el puntero está sobre la tarjeta. Al bajar, la hoja de "Cómo ayudar" sube encima y la foto se encoge y se oscurece.
 2. **Cómo ayudar**: cinco formas de ayudar en tarjetas que se deslizan de lado con el scroll vertical. En móvil es un carrusel deslizable, precedido por la donación rápida.
 3. **Sigue tu ayuda**: la ruta de una donación de ejemplo se dibuja con el scroll mientras el comprobante se completa.
 4. **Para quién es**: gobierno, fundaciones, ciudadanía y comunidades, cada uno con un pedazo de la interfaz que usaría.
@@ -21,6 +21,7 @@ Las cifras del hero vienen de las fuentes del planteamiento del problema (listad
 - La donación sugerida de $85.000 y el turno de 4 horas.
 - El seguimiento de la donación #GA-24817.
 - Las zonas, porcentajes y nombres de las tarjetas de "Para quién es".
+- Las tarjetas del hero, salvo la de noticias: sus titulares vienen de las fuentes listadas en el footer.
 
 ## Desarrollo
 

@@ -18,7 +18,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Heart, Pause, Play } from "lucid
 import { heroSlides, type Action } from "@/content/site";
 import { easeCortina, easeEntrada, easeSalida } from "@/lib/motion";
 import { layer } from "@/lib/page-transition";
-import { QuickDonate } from "@/components/hero/quick-donate";
+import { HeroPanel } from "@/components/hero/hero-panel";
 
 const SLIDE_MS = 7000;
 const WIPE_S = 1.15;
@@ -79,6 +79,8 @@ export function HeroCarousel() {
   const [focusInside, setFocusInside] = useState(false);
   const [tabVisible, setTabVisible] = useState(true);
   const [covered, setCovered] = useState(false);
+  // Mientras alguien lee la tarjeta de la derecha, el tema no cambia
+  const [readingPanel, setReadingPanel] = useState(false);
 
   // Mientras la hoja siguiente sube, la tarjeta se encoge, la foto se acerca, todo se oscurece y el texto se va.
   const { scrollY } = useScroll();
@@ -96,7 +98,7 @@ export function HeroCarousel() {
 
   // Con "reducir movimiento" el carrusel arranca en pausa; la persona decide si lo reproduce.
   const paused = userPaused ?? !!prefersReducedMotion;
-  const running = !paused && !focusInside && tabVisible && !covered;
+  const running = !paused && !focusInside && tabVisible && !covered && !readingPanel;
   const slide = heroSlides[index];
 
   // Precarga la siguiente foto (la misma variante optimizada que pedirá <Image>) para que la cortina nunca descubra un vacío.
@@ -252,7 +254,7 @@ export function HeroCarousel() {
                 </AnimatePresence>
 
                 <div className="hidden lg:block">
-                  <QuickDonate variant="glass" />
+                  <HeroPanel slug={slide.slug} icon={slide.icon} panel={slide.panel} onHoverChange={setReadingPanel} />
                 </div>
               </div>
 
