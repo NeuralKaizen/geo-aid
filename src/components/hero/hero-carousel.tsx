@@ -1,10 +1,19 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useRef, useState, ViewTransition } from "react";
+import { Fragment, useCallback, useEffect, useState, ViewTransition } from "react";
 import { preload } from "react-dom";
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type Variants,
+} from "motion/react";
 import { ArrowRight, ChevronLeft, ChevronRight, Heart, Pause, Play } from "lucide-react";
 import { heroSlides, type Action } from "@/content/site";
 import { easeCortina, easeEntrada, easeSalida } from "@/lib/motion";
@@ -15,24 +24,28 @@ const SLIDE_MS = 7000;
 const WIPE_S = 1.15;
 const count = heroSlides.length;
 
-/* La foto nueva entra como una cortina desde el lado hacia el que se navega; la anterior se queda debajo, se corre y se oscurece. */
+/*
+ * La foto nueva entra como una cortina desde el lado hacia el que se navega; la anterior se queda debajo, se corre y
+ * se oscurece. La cortina son dos capas que se desplazan en sentido contrario (afuera +100 %, adentro −100 %): se ve
+ * igual que un clip-path pero la compone la GPU en vez de repintar la pantalla completa en cada cuadro.
+ */
 const frame: Variants = {
-  enter: (dir: number) => ({
-    clipPath: dir >= 0 ? "inset(0% 0% 0% 100%)" : "inset(0% 100% 0% 0%)",
-    zIndex: 2,
-    filter: "brightness(1)",
-  }),
-  center: {
-    clipPath: "inset(0% 0% 0% 0%)",
-    zIndex: 2,
-    filter: "brightness(1)",
-    transition: { duration: WIPE_S, ease: easeCortina },
-  },
-  exit: {
-    zIndex: 1,
-    filter: "brightness(0.55)",
-    transition: { duration: WIPE_S, ease: easeCortina },
-  },
+  enter: (dir: number) => ({ x: dir >= 0 ? "100%" : "-100%", zIndex: 2 }),
+  center: { x: "0%", zIndex: 2, transition: { duration: WIPE_S, ease: easeCortina } },
+  exit: { x: "0%", zIndex: 1, transition: { duration: WIPE_S } },
+};
+
+const counter: Variants = {
+  enter: (dir: number) => ({ x: dir >= 0 ? "-100%" : "100%" }),
+  center: { x: "0%", transition: { duration: WIPE_S, ease: easeCortina } },
+  exit: { x: "0%", transition: { duration: WIPE_S } },
+};
+
+/* Oscurece la foto que sale con un velo de opacidad: se compone en la GPU, a diferencia de filter: brightness() */
+const shade: Variants = {
+  enter: { opacity: 0 },
+  center: { opacity: 0 },
+  exit: { opacity: 0.5, transition: { duration: WIPE_S, ease: easeCortina } },
 };
 
 const photo: Variants = {
@@ -48,8 +61,8 @@ const copy: Variants = {
 };
 
 const word: Variants = {
-  hidden: { y: "108%" },
-  show: { y: "0%", transition: { duration: 0.95, ease: easeSalida } },
+  hidden: { y: "108%", rotate: 4 },
+  show: { y: "0%", rotate: 0, transition: { duration: 1, ease: easeSalida } },
   exit: { y: "-108%", transition: { duration: 0.35, ease: easeEntrada } },
 };
 
@@ -64,12 +77,26 @@ export function HeroCarousel() {
   const [[index, direction], setSlide] = useState<[number, number]>([0, 1]);
   const [userPaused, setUserPaused] = useState<boolean | null>(null);
   const [focusInside, setFocusInside] = useState(false);
-  const [onScreen, setOnScreen] = useState(true);
-  const sectionRef = useRef<HTMLElement>(null);
+  const [tabVisible, setTabVisible] = useState(true);
+  const [covered, setCovered] = useState(false);
+
+  // Mientras la hoja siguiente sube, la tarjeta se encoge, la foto se acerca, todo se oscurece y el texto se va.
+  const { scrollY } = useScroll();
+  const still = useMotionValue(0);
+  const scrolled = useTransform(scrollY, (y) =>
+    typeof window === "undefined" ? 0 : Math.min(1, Math.max(0, y / window.innerHeight)),
+  );
+  const progress = prefersReducedMotion ? still : scrolled;
+  const cardScale = useTransform(progress, [0, 1], [1, 0.86]);
+  const photoScale = useTransform(progress, [0, 1], [1, 1.14]);
+  const copyY = useTransform(progress, [0, 1], [0, -180]);
+  const copyOpacity = useTransform(progress, [0, 0.45], [1, 0]);
+  const dim = useTransform(progress, [0.1, 1], [0, 0.75]);
+  useMotionValueEvent(scrolled, "change", (p) => setCovered(p > 0.8));
 
   // Con "reducir movimiento" el carrusel arranca en pausa; la persona decide si lo reproduce.
   const paused = userPaused ?? !!prefersReducedMotion;
-  const running = !paused && !focusInside && onScreen;
+  const running = !paused && !focusInside && tabVisible && !covered;
   const slide = heroSlides[index];
 
   // Precarga la siguiente foto (la misma variante optimizada que pedirá <Image>) para que la cortina nunca descubra un vacío.
@@ -85,18 +112,9 @@ export function HeroCarousel() {
   }, []);
 
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const observer = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting && !document.hidden), {
-      threshold: 0.35,
-    });
-    observer.observe(section);
-    const onVisibility = () => setOnScreen(!document.hidden);
+    const onVisibility = () => setTabVisible(!document.hidden);
     document.addEventListener("visibilitychange", onVisibility);
-    return () => {
-      observer.disconnect();
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
+    return () => document.removeEventListener("visibilitychange", onVisibility);
   }, []);
 
   function onKeyDown(event: React.KeyboardEvent) {
@@ -107,7 +125,6 @@ export function HeroCarousel() {
 
   return (
     <section
-      ref={sectionRef}
       aria-roledescription="carrusel"
       aria-label="Temas destacados"
       onKeyDown={onKeyDown}
@@ -118,20 +135,26 @@ export function HeroCarousel() {
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocusInside(false);
       }}
-      className="relative px-3 pt-3"
+      className="sticky top-0 h-svh overflow-hidden bg-bosque-950"
     >
       <h1 className="sr-only">GeoAid: ayuda coordinada tras el terremoto del 10 de agosto</h1>
 
+      {/*
+       * La tarjeta es 56 px más grande que la pantalla por cada lado y tiene el radio fijo: en reposo las esquinas
+       * quedan fuera de vista y aparecen solas al encogerse. Así solo se anima scale (GPU) y no border-radius, que
+       * obligaría a repintar la foto completa en cada cuadro de scroll.
+       */}
       <motion.div
+        style={{ scale: cardScale }}
         onPanEnd={(_, info) => {
           if (Math.abs(info.offset.x) > 60 && Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
             paginate(info.offset.x < 0 ? 1 : -1);
           }
         }}
-        className="relative isolate h-[max(600px,calc(100svh-4.5rem))] touch-pan-y overflow-hidden rounded-[28px] bg-bosque-950 md:h-[max(640px,calc(100svh-4rem))]"
+        className="absolute -inset-14 isolate touch-pan-y overflow-hidden rounded-[48px] will-change-transform"
       >
         {/* Fotos */}
-        <div className="absolute inset-0">
+        <motion.div style={{ scale: photoScale }} className="absolute inset-0">
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={slide.slug}
@@ -140,89 +163,105 @@ export function HeroCarousel() {
               initial="enter"
               animate="center"
               exit="exit"
-              className="absolute inset-0"
+              className="absolute inset-0 overflow-hidden"
             >
-              <ViewTransition name={`seccion-${slide.slug}`} share="morph" default="none">
-                <div className="absolute inset-0 overflow-hidden rounded-[28px]">
-                  <motion.div custom={direction} variants={photo} className="absolute inset-0">
-                    <div className="absolute inset-0 animate-ken-burns">
-                      <Image
-                        src={slide.photo.src}
-                        alt={slide.photo.alt}
-                        fill
-                        sizes="100vw"
-                        preload={index === 0}
-                        className="object-cover"
-                        style={{ objectPosition: slide.photo.position }}
-                      />
-                    </div>
-                  </motion.div>
-                </div>
-              </ViewTransition>
+              <motion.div custom={direction} variants={counter} className="absolute inset-0">
+                <ViewTransition name={`seccion-${slide.slug}`} share="morph" default="none">
+                  <div className="absolute inset-0 overflow-hidden">
+                    <motion.div custom={direction} variants={photo} className="absolute inset-0">
+                      <div className="absolute inset-0 animate-ken-burns">
+                        <Image
+                          src={slide.photo.src}
+                          alt={slide.photo.alt}
+                          fill
+                          sizes="100vw"
+                          preload={index === 0}
+                          className="object-cover"
+                          style={{ objectPosition: slide.photo.position }}
+                        />
+                      </div>
+                    </motion.div>
+                  </div>
+                </ViewTransition>
+              </motion.div>
+              <motion.div aria-hidden variants={shade} className="absolute inset-0 bg-black" />
             </motion.div>
           </AnimatePresence>
-        </div>
+        </motion.div>
 
         <ViewTransition enter={layer} exit={layer} default="none">
           <div className="absolute inset-0 z-10">
             {/* Velos para que el texto siempre se lea */}
             <div aria-hidden className="pointer-events-none absolute inset-0">
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,39,36,0.9)_0%,rgba(6,39,36,0.72)_32%,rgba(6,39,36,0.18)_68%,rgba(6,39,36,0)_100%)] max-md:bg-bosque-950/55" />
-              <div className="absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-bosque-950/70 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-bosque-950/85 via-bosque-950/30 to-transparent" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,39,36,0.88)_0%,rgba(6,39,36,0.62)_34%,rgba(6,39,36,0.12)_70%,rgba(6,39,36,0)_100%)] max-md:bg-bosque-950/50" />
+              <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-bosque-950/75 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-bosque-950/90 via-bosque-950/35 to-transparent" />
             </div>
 
-            {/* Texto */}
-            <div className="relative z-20 mx-auto flex h-full max-w-[1240px] flex-col justify-end px-6 pb-40 pt-32 sm:pb-44 lg:px-10">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={slide.slug}
-                  role="group"
-                  aria-roledescription="diapositiva"
-                  aria-label={`${index + 1} de ${count}: ${slide.tab}`}
-                  aria-live={running ? "off" : "polite"}
-                  variants={copy}
-                  initial="hidden"
-                  animate="show"
-                  exit="exit"
-                  className="max-w-[44rem] text-white"
-                >
-                  <motion.p
-                    variants={rise}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 py-1.5 pl-2.5 pr-3.5 text-[13px] font-medium text-white/90 backdrop-blur-md"
+            <motion.div
+              style={{ y: copyY, opacity: copyOpacity }}
+              className="absolute inset-14 mx-auto flex max-w-[1320px] flex-col justify-end px-5 pb-[5.5rem] pt-28 sm:px-8 lg:px-12 lg:pb-24"
+            >
+              <div className="grid items-end gap-10 lg:grid-cols-[minmax(0,1fr)_22.5rem] xl:gap-16">
+                {/* Texto */}
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={slide.slug}
+                    role="group"
+                    aria-roledescription="diapositiva"
+                    aria-label={`${index + 1} de ${count}: ${slide.tab}`}
+                    aria-live={running ? "off" : "polite"}
+                    variants={copy}
+                    initial="hidden"
+                    animate="show"
+                    exit="exit"
+                    className="max-w-[46rem] text-white"
                   >
-                    <slide.icon className="size-4 text-maiz-400" aria-hidden />
-                    {slide.tag}
-                  </motion.p>
+                    <motion.p
+                      variants={rise}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 py-1.5 pl-2.5 pr-3.5 text-[13px] font-medium text-white/90 backdrop-blur-md"
+                    >
+                      <slide.icon className="size-4 text-maiz-400" aria-hidden />
+                      {slide.tag}
+                    </motion.p>
 
-                  <h2 className="mt-5 font-display text-[clamp(2.4rem,min(5.2vw,8.6svh),4.75rem)] font-semibold leading-[1.02] tracking-[-0.035em] text-balance">
-                    {slide.title.split(" ").map((text, i) => (
-                      <Fragment key={i}>
-                        <span className="-mb-[0.14em] inline-block overflow-hidden pb-[0.14em] align-bottom">
-                          <motion.span variants={word} className="inline-block">
-                            {text}
-                          </motion.span>
-                        </span>{" "}
-                      </Fragment>
-                    ))}
-                  </h2>
+                    <h2 className="mt-5 font-display text-[clamp(2.6rem,min(5.6vw,9svh),5.4rem)] font-semibold leading-[0.98] tracking-[-0.04em] text-balance">
+                      {slide.title.split(" ").map((text, i) => (
+                        <Fragment key={i}>
+                          <span className="-mb-[0.14em] inline-block overflow-hidden pb-[0.14em] align-bottom">
+                            <motion.span variants={word} className="inline-block origin-bottom-left">
+                              {text}
+                            </motion.span>
+                          </span>{" "}
+                        </Fragment>
+                      ))}
+                    </h2>
 
-                  <motion.p variants={rise} className="mt-5 max-w-[34rem] text-[1.0625rem] leading-relaxed text-white/80 sm:text-lg">
-                    {slide.body}
-                  </motion.p>
+                    <motion.p
+                      variants={rise}
+                      className="mt-5 max-w-[34rem] text-[1.0625rem] leading-relaxed text-white/80 sm:text-lg"
+                    >
+                      {slide.body}
+                    </motion.p>
 
-                  <motion.div variants={rise} className="mt-8 flex flex-wrap items-center gap-3">
-                    <HeroAction action={slide.primary} primary />
-                    <HeroAction action={slide.secondary} />
+                    <motion.div variants={rise} className="mt-8 flex flex-wrap items-center gap-3">
+                      <HeroAction action={slide.primary} primary />
+                      <HeroAction action={slide.secondary} />
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
+                </AnimatePresence>
 
-            {/* Controles */}
-            <div className="absolute inset-x-0 bottom-0 z-20">
-              <div className="mx-auto flex max-w-[1240px] items-end gap-6 px-6 pb-[4.75rem] lg:px-10">
-                <div className="flex max-w-[40rem] flex-1 gap-2 sm:gap-3" style={{ "--slide-ms": `${SLIDE_MS}ms` } as React.CSSProperties}>
+                <div className="hidden lg:block">
+                  <QuickDonate variant="glass" />
+                </div>
+              </div>
+
+              {/* Controles */}
+              <div className="mt-10 flex items-end gap-6 lg:mt-12">
+                <div
+                  className="flex max-w-[44rem] flex-1 gap-2 sm:gap-3"
+                  style={{ "--slide-ms": `${SLIDE_MS}ms` } as React.CSSProperties}
+                >
                   {heroSlides.map((item, i) => (
                     <button
                       key={item.slug}
@@ -232,30 +271,38 @@ export function HeroCarousel() {
                       aria-current={i === index ? "true" : undefined}
                       className="group flex-1 py-2 text-left"
                     >
-                      <span className="relative block h-[3px] overflow-hidden rounded-full bg-white/25 transition-colors group-hover:bg-white/40">
+                      <span
+                        className={`hidden truncate pb-2.5 text-[13px] font-medium transition-colors duration-500 sm:block ${
+                          i === index ? "text-white" : "text-white/45 group-hover:text-white/85"
+                        }`}
+                      >
+                        {item.tab}
+                      </span>
+                      <span className="relative block h-[3px] overflow-hidden rounded-full bg-white/20 transition-colors group-hover:bg-white/40">
+                        {i < index && <span className="absolute inset-0 rounded-full bg-white/55" />}
                         {i === index && (
                           <span
                             key={index}
-                            className="absolute inset-0 origin-left animate-progreso rounded-full bg-white"
+                            className="absolute inset-0 origin-left animate-progreso rounded-full bg-maiz-400"
                             style={{ animationPlayState: running ? "running" : "paused" }}
                             onAnimationEnd={() => paginate(1)}
                           />
                         )}
-                      </span>
-                      <span
-                        className={`mt-2.5 hidden truncate text-[13px] font-medium transition-colors duration-500 sm:block ${
-                          i === index ? "text-white" : "text-white/50 group-hover:text-white/85"
-                        }`}
-                      >
-                        {item.tab}
                       </span>
                     </button>
                   ))}
                 </div>
 
                 <div className="ml-auto flex items-center gap-2">
-                  <RoundButton label={paused ? "Reproducir carrusel" : "Pausar carrusel"} onClick={() => setUserPaused(!paused)}>
-                    {paused ? <Play className="size-4 fill-current" aria-hidden /> : <Pause className="size-4 fill-current" aria-hidden />}
+                  <RoundButton
+                    label={paused ? "Reproducir carrusel" : "Pausar carrusel"}
+                    onClick={() => setUserPaused(!paused)}
+                  >
+                    {paused ? (
+                      <Play className="size-4 fill-current" aria-hidden />
+                    ) : (
+                      <Pause className="size-4 fill-current" aria-hidden />
+                    )}
                   </RoundButton>
                   <RoundButton label="Tema anterior" onClick={() => paginate(-1)} className="max-sm:hidden">
                     <ChevronLeft className="size-5" aria-hidden />
@@ -265,10 +312,10 @@ export function HeroCarousel() {
                   </RoundButton>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Crédito de la foto, en vertical sobre el borde derecho */}
-            <div className="pointer-events-none absolute right-3 top-1/2 z-20 hidden -translate-y-1/2 md:block">
+            <div className="pointer-events-none absolute right-[4.25rem] top-1/2 hidden -translate-y-1/2 md:block">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.p
                   key={slide.slug}
@@ -283,25 +330,28 @@ export function HeroCarousel() {
             </div>
           </div>
         </ViewTransition>
-      </motion.div>
 
-      <div className="relative z-30 mx-auto -mt-12 max-w-[56rem] px-2 sm:px-4">
-        <QuickDonate />
-      </div>
+        {/* Oscurece la tarjeta mientras la hoja de abajo la cubre */}
+        <motion.div aria-hidden style={{ opacity: dim }} className="pointer-events-none absolute inset-0 z-20 bg-bosque-950" />
+      </motion.div>
     </section>
   );
 }
 
 function HeroAction({ action, primary = false }: { action: Action; primary?: boolean }) {
   const className = primary
-    ? "group inline-flex h-12 items-center gap-2 rounded-full bg-bosque-600 px-6 text-[15px] font-semibold text-white ring-1 ring-white/15 transition-colors duration-300 hover:bg-bosque-700"
+    ? "group inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-[15px] font-semibold text-bosque-900 transition-colors duration-300 hover:bg-maiz-400"
     : "group inline-flex h-12 items-center gap-2 rounded-full px-6 text-[15px] font-semibold text-white ring-1 ring-white/40 transition-colors duration-300 hover:bg-white/10 hover:ring-white/70";
   const isDonation = action.href === "/donar";
   const content = (
     <>
-      {isDonation && <Heart className="size-4 transition-transform duration-500 ease-salida group-hover:scale-125" aria-hidden />}
+      {isDonation && (
+        <Heart className="size-4 transition-transform duration-500 ease-salida group-hover:scale-125" aria-hidden />
+      )}
       {action.label}
-      {!isDonation && <ArrowRight className="size-4 transition-transform duration-500 ease-salida group-hover:translate-x-1" aria-hidden />}
+      {!isDonation && (
+        <ArrowRight className="size-4 transition-transform duration-500 ease-salida group-hover:translate-x-1" aria-hidden />
+      )}
     </>
   );
 

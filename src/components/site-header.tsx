@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, type Variants } from "motion/react";
+import { useLenis } from "lenis/react";
 import { Heart, Menu, Phone, Search, UserRound, X } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { SearchDialog } from "@/components/search-dialog";
@@ -24,8 +25,15 @@ export function SiteHeader({ variant, active }: HeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { scrollY } = useScroll();
+  const lenis = useLenis();
 
   useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > SCROLL_THRESHOLD));
+
+  // Con el menú o el buscador abiertos la página no debe moverse por detrás
+  useEffect(() => {
+    if (menuOpen || searchOpen) lenis?.stop();
+    else lenis?.start();
+  }, [lenis, menuOpen, searchOpen]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -57,9 +65,9 @@ export function SiteHeader({ variant, active }: HeaderProps) {
 
 function OverlayNav({ onSearch, onMenu }: NavActions) {
   return (
-    <div className="absolute inset-x-3 top-3 z-30 text-white">
+    <div className="absolute inset-x-0 top-0 z-30 text-white">
       <div className="hidden border-b border-white/15 md:block">
-        <div className="mx-auto flex h-10 max-w-[1240px] items-center justify-between gap-6 px-6 text-[13px] text-white/75 lg:px-10">
+        <div className="mx-auto flex h-10 max-w-[1320px] items-center justify-between gap-6 px-5 text-[13px] text-white/75 sm:px-8 lg:px-12">
           <div className="flex items-center gap-6">
             <a href={`tel:${emergencyLine.number}`} className="flex items-center gap-1.5 transition-colors hover:text-white">
               <Phone className="size-3.5" aria-hidden />
@@ -73,7 +81,7 @@ function OverlayNav({ onSearch, onMenu }: NavActions) {
         </div>
       </div>
 
-      <div className="mx-auto flex h-[4.5rem] max-w-[1240px] items-center gap-8 px-6 md:h-20 lg:px-10">
+      <div className="mx-auto flex h-[4.5rem] max-w-[1320px] items-center gap-8 px-5 sm:px-8 md:h-20 lg:px-12">
         <Logo />
         <nav aria-label="Principal" className="hidden flex-1 justify-center lg:flex">
           <ul className="flex items-center gap-1">
@@ -103,6 +111,7 @@ function OverlayNav({ onSearch, onMenu }: NavActions) {
 function FloatingNav({ visible, active, onSearch, onMenu }: NavActions & { visible: boolean; active?: NavSlug }) {
   const [hovered, setHovered] = useState<NavSlug | null>(null);
   const highlighted = hovered ?? active;
+  const { scrollYProgress } = useScroll();
 
   return (
     <motion.header
@@ -112,7 +121,13 @@ function FloatingNav({ visible, active, onSearch, onMenu }: NavActions & { visib
       inert={!visible}
       className="fixed inset-x-3 top-3 z-40"
     >
-      <div className="mx-auto flex h-16 max-w-[1240px] items-center gap-6 rounded-[20px] border border-linea/70 bg-white/85 pl-5 pr-2.5 shadow-[0_18px_44px_-26px_rgba(6,39,36,0.55)] backdrop-blur-xl backdrop-saturate-150">
+      <div className="relative mx-auto flex h-16 max-w-[1240px] items-center gap-6 overflow-hidden rounded-[20px] border border-linea/70 bg-white/85 pl-5 pr-2.5 shadow-[0_18px_44px_-26px_rgba(6,39,36,0.55)] backdrop-blur-xl backdrop-saturate-150">
+        {/* Cuánto de la página llevas */}
+        <motion.span
+          aria-hidden
+          style={{ scaleX: scrollYProgress }}
+          className="absolute inset-x-0 bottom-0 h-[2px] origin-left bg-maiz-400"
+        />
         <Logo tone="dark" />
         <nav aria-label="Principal" className="hidden flex-1 justify-center lg:flex" onMouseLeave={() => setHovered(null)}>
           <ul className="flex items-center">
@@ -226,6 +241,7 @@ function MobileMenu({ open, onClose, active }: { open: boolean; onClose: () => v
           animate={{ clipPath: "circle(150% at calc(100% - 44px) 46px)" }}
           exit={{ clipPath: "circle(0% at calc(100% - 44px) 46px)" }}
           transition={{ duration: 0.75, ease: easeCortina }}
+          data-lenis-prevent
           className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-bosque-900 px-6 pb-8 pt-4 text-white lg:hidden"
         >
           <div className="flex h-14 items-center justify-between">

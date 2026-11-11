@@ -264,6 +264,57 @@ export const helpSteps = [
   },
 ];
 
+/* Sigue tu ayuda: seguimiento de ejemplo */
+
+export const trackingDemo = {
+  code: "GA-24817",
+  amount: "$50.000",
+  destination: "Kits de alimentos",
+  stops: ["Tu donación", "Centro de acopio", "Ruta rural", "Punto de entrega"],
+  steps: [
+    { title: "Donación recibida", detail: "Pago confirmado", time: "18 ago, 9:12" },
+    { title: "Comprada y empacada", detail: "Centro de acopio regional, por 6 voluntarios", time: "18 ago, 15:40" },
+    { title: "En camino", detail: "Camión 3 de 5, ruta rural", time: "19 ago, 6:05" },
+    { title: "Entregada", detail: "Punto de entrega rural, 12 familias", time: "19 ago, 13:20" },
+  ],
+};
+
+/* Para quién es */
+
+export const audiences = [
+  {
+    id: "gobierno",
+    title: "Gobierno y entidades",
+    body: "Ve qué zonas ya recibieron ayuda y cuáles no, y reparte sin duplicar entregas.",
+  },
+  {
+    id: "organizaciones",
+    title: "Fundaciones y Cruz Roja",
+    body: "Publica qué recibes y qué no, y convoca voluntarios por turnos.",
+  },
+  {
+    id: "ciudadania",
+    title: "Ciudadanía",
+    body: "Sabe qué donar, dónde llevarlo y a dónde llegó lo que diste.",
+  },
+  {
+    id: "comunidades",
+    title: "Comunidades afectadas",
+    body: "Registra lo que falta en tu vereda, aunque no aparezcas en el registro oficial.",
+  },
+] as const;
+
+/* Fuentes del problema, tal como las entregó el equipo */
+
+export const sources = [
+  "Infobae (10 de octubre de 2026). Dos meses del terremoto en Colombia, Defensoría pidió reabrir el registro de damnificados",
+  "Urna de Cristal (31 de agosto de 2026). El terremoto del 10 de agosto deja más de 300 muertos y 260.000 damnificados en Colombia",
+  "Vanguardia (5 de octubre de 2026). Procuraduría pide a la UNGRD agilizar ayudas para damnificados por el terremoto",
+  "Pulzo (17 de agosto de 2026). Bogotá finaliza recolección de donaciones por terremoto",
+  "Infobae (14 de agosto de 2026). Cruz Roja aclaró qué donaciones necesitan las víctimas del terremoto y qué no",
+  "Blu Radio (12 de marzo de 2024). Conclusiones de la Contraloría por caso carrotanques para La Guajira",
+];
+
 /* Páginas de sección (en construcción) */
 
 export type SectionPage = {

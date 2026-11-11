@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Figtree, Outfit } from "next/font/google";
 import { Providers } from "@/components/providers";
+import "lenis/dist/lenis.css";
 import "./globals.css";
 
 const outfit = Outfit({

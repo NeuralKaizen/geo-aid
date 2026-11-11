@@ -50,15 +50,10 @@
   --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Sin scroll-behavior: smooth, Lenis ya suaviza el scroll y los dos juntos se estorban */
 :root {
   color-scheme: light;
   scroll-padding-top: 6rem;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  :root {
-    scroll-behavior: smooth;
-  }
 }
 
 /* En una capa para que utilidades como outline-none puedan sobrescribirlo */

@@ -2,6 +2,7 @@ import { ViewTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { navLinks, sectionPages, type NavSlug, type Photo, type SectionKey } from "@/content/site";
 import { directional, layer } from "@/lib/page-transition";
@@ -14,7 +15,7 @@ export function SectionPage({ slug }: { slug: SectionKey }) {
   return (
     <>
       <SiteHeader variant="solid" active={active} />
-      <main className="px-3 pb-24 pt-[5.25rem]">
+      <main className="relative z-10 rounded-b-[36px] bg-papel px-3 pb-24 pt-[5.25rem] md:rounded-b-[48px]">
         <section className="relative isolate min-h-[min(68svh,600px)] overflow-hidden rounded-[28px] bg-bosque-900">
           {"photo" in page && <Banner photo={page.photo} morph={"morph" in page ? page.morph : undefined} />}
           <ViewTransition enter={layer} exit={layer} default="none">
@@ -55,6 +56,7 @@ export function SectionPage({ slug }: { slug: SectionKey }) {
           </div>
         </ViewTransition>
       </main>
+      <SiteFooter />
     </>
   );
 }

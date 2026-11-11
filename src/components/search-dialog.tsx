@@ -120,7 +120,7 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
               <kbd className="hidden rounded-md border border-linea px-1.5 py-0.5 text-xs text-niebla sm:block">Esc</kbd>
             </div>
 
-            <ul id="search-results" role="listbox" className="max-h-[50vh] overflow-y-auto p-2">
+            <ul id="search-results" role="listbox" data-lenis-prevent className="max-h-[50vh] overflow-y-auto p-2">
               {results.length === 0 && (
                 <li className="px-4 py-8 text-center text-niebla">
                   No hay resultados para “{query}”. Prueba con donar, voluntariado o centros.
