@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
+import { NavLink } from "@/components/transitions/nav-link";
 import { motion, useScroll, useTransform } from "motion/react";
 import { Heart, Phone } from "lucide-react";
 import { emergencyLine, navLinks, sources } from "@/content/site";
@@ -56,28 +56,28 @@ export function SiteFooter() {
             Que la ayuda llegue a donde hace falta.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link
+            <NavLink
               href="/donar"
-              transitionTypes={["nav-forward"]}
+             
               className="inline-flex h-12 items-center gap-2 rounded-full bg-maiz-400 px-6 text-[15px] font-semibold text-bosque-950 transition-[filter] hover:brightness-105"
             >
               <Heart className="size-4 fill-current" aria-hidden />
               Donar
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               href="/voluntariado"
-              transitionTypes={["nav-forward"]}
+             
               className="inline-flex h-12 items-center rounded-full px-6 text-[15px] font-semibold ring-1 ring-white/30 transition-colors hover:bg-white/10"
             >
               Ser voluntario
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               href="/necesito-ayuda"
-              transitionTypes={["nav-forward"]}
+             
               className="inline-flex h-12 items-center rounded-full px-6 text-[15px] font-semibold ring-1 ring-white/30 transition-colors hover:bg-white/10"
             >
               Necesito ayuda
-            </Link>
+            </NavLink>
           </div>
         </div>
 
@@ -87,9 +87,9 @@ export function SiteFooter() {
             <ul className="mt-4 space-y-2.5">
               {navLinks.map((link) => (
                 <li key={link.slug}>
-                  <Link href={link.href} transitionTypes={["nav-forward"]} className="text-white/80 transition-colors hover:text-maiz-400">
+                  <NavLink href={link.href} className="text-white/80 transition-colors hover:text-maiz-400">
                     {link.label}
-                  </Link>
+                  </NavLink>
                 </li>
               ))}
             </ul>
@@ -98,14 +98,14 @@ export function SiteFooter() {
             <p className="text-[13px] font-semibold text-white/45">Ayuda</p>
             <ul className="mt-4 space-y-2.5 text-white/80">
               <li>
-                <Link href="/necesito-ayuda" transitionTypes={["nav-forward"]} className="transition-colors hover:text-maiz-400">
+                <NavLink href="/necesito-ayuda" className="transition-colors hover:text-maiz-400">
                   Registrar una necesidad
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link href="/portal" transitionTypes={["nav-forward"]} className="transition-colors hover:text-maiz-400">
+                <NavLink href="/portal" className="transition-colors hover:text-maiz-400">
                   Mi portal
-                </Link>
+                </NavLink>
               </li>
               <li>
                 <a href={`tel:${emergencyLine.number}`} className="flex items-center gap-2 transition-colors hover:text-maiz-400">

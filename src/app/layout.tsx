@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Figtree, Outfit } from "next/font/google";
+import { Intro } from "@/components/intro";
 import { Providers } from "@/components/providers";
 import "lenis/dist/lenis.css";
 import "./globals.css";
@@ -25,8 +26,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${outfit.variable} ${figtree.variable} antialiased`}>
+    <html lang="es" className={`${outfit.variable} ${figtree.variable} antialiased`} suppressHydrationWarning>
       <body className="min-h-dvh">
+        <Intro />
         <Providers>{children}</Providers>
       </body>
     </html>

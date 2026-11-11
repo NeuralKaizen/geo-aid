@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { NavLink } from "@/components/transitions/nav-link";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { LifeBuoy } from "lucide-react";
 
@@ -21,14 +21,14 @@ export function HelpFab() {
           transition={{ type: "spring", bounce: 0.35, duration: 0.7 }}
           className="fixed bottom-4 right-4 z-30 sm:bottom-5 sm:right-5"
         >
-          <Link
+          <NavLink
             href="/necesito-ayuda"
-            transitionTypes={["nav-forward"]}
+           
             className="group flex h-12 items-center gap-2 rounded-full bg-maiz-400 pl-3.5 pr-4 text-[15px] font-semibold text-bosque-950 sm:h-14 sm:gap-2.5 sm:pl-4 sm:pr-5 sm:text-base shadow-[0_18px_40px_-16px_rgba(122,82,11,0.7)] transition-transform duration-300 hover:-translate-y-0.5"
           >
             <LifeBuoy className="size-5 transition-transform duration-700 ease-salida group-hover:rotate-180" aria-hidden />
             Necesito ayuda
-          </Link>
+          </NavLink>
         </motion.div>
       )}
     </AnimatePresence>

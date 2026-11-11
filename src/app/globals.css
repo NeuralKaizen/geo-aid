@@ -84,6 +84,160 @@
   }
 }
 
+/*
+ * Pantalla de carga (components/intro.tsx). Dura 1,9 s en total: el logo se dibuja, aparece el nombre y la hoja sube.
+ * La hoja mide más que la pantalla y tiene el radio abajo, así sus esquinas solo se ven mientras sube.
+ */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow: hidden;
+  pointer-events: none;
+  animation: intro-fin 0s linear 1.9s forwards;
+}
+
+:root[data-intro="visto"] .intro {
+  display: none;
+}
+
+.intro-hoja {
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(100% + 56px);
+  display: grid;
+  place-items: center;
+  padding-bottom: 56px;
+  border-radius: 0 0 48px 48px;
+  background: var(--color-bosque-950);
+  color: #fff;
+  animation: intro-sube 0.8s cubic-bezier(0.77, 0, 0.18, 1) 1.1s forwards;
+}
+
+.intro-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  animation: intro-se-va 0.5s cubic-bezier(0.7, 0, 0.84, 0) 1.05s forwards;
+}
+
+.intro-marca {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.intro-marca svg {
+  width: clamp(2.75rem, 5vw, 3.75rem);
+  height: auto;
+  overflow: visible;
+}
+
+.intro-techo,
+.intro-onda {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.intro-techo {
+  color: rgb(255 255 255 / 0.85);
+  animation: intro-trazo 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+/* La onda se dibuja de izquierda a derecha: sube, cae y termina plana */
+.intro-onda {
+  color: var(--color-maiz-400);
+  animation: intro-trazo 0.85s cubic-bezier(0.65, 0, 0.35, 1) 0.28s forwards;
+}
+
+.intro-palabra {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.1em;
+  font-family: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.6rem, 6vw, 4.25rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.intro-palabra span {
+  display: block;
+  transform: translateY(110%);
+  animation: intro-asoma 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+}
+
+.intro-nota {
+  font-size: 0.875rem;
+  color: rgb(255 255 255 / 0.55);
+  opacity: 0;
+  animation: intro-aparece 0.6s ease-out 0.6s forwards;
+}
+
+@keyframes intro-trazo {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes intro-asoma {
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes intro-aparece {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes intro-se-va {
+  to {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+
+@keyframes intro-sube {
+  to {
+    transform: translateY(calc(-100% - 8px));
+  }
+}
+
+@keyframes intro-fin {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* Con movimiento reducido: el logo aparece completo y la pantalla solo se desvanece */
+@media (prefers-reduced-motion: reduce) {
+  .intro {
+    animation-delay: 0.9s;
+  }
+  .intro-techo,
+  .intro-onda,
+  .intro-palabra span,
+  .intro-nota,
+  .intro-contenido {
+    animation: none;
+    stroke-dashoffset: 0;
+    transform: none;
+    opacity: 1;
+  }
+  .intro-hoja {
+    animation: intro-desvanece 0.35s ease-out 0.5s forwards;
+  }
+}
+
+@keyframes intro-desvanece {
+  to {
+    opacity: 0;
+  }
+}
+
 /* Transiciones entre páginas (React <ViewTransition>) */
 
 ::view-transition-group(.morph) {

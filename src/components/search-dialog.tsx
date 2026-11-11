@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, CornerDownLeft, Search } from "lucide-react";
 import { helpOptions, navLinks } from "@/content/site";
+import { useCurtain } from "@/components/transitions/curtain";
 import { easeSalida } from "@/lib/motion";
 
 type Entry = { label: string; group: string; href: string };
@@ -24,7 +24,7 @@ const normalize = (text: string) =>
     .toLowerCase();
 
 export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const router = useRouter();
+  const navigate = useCurtain();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
   const returnFocus = useRef<HTMLElement | null>(null);
@@ -54,7 +54,7 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
 
   function go(entry: Entry) {
     close();
-    router.push(entry.href);
+    navigate(entry.href);
   }
 
   function onKeyDown(event: React.KeyboardEvent) {

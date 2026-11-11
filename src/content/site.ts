@@ -32,6 +32,19 @@ export const navLinks = [
 
 export type NavSlug = (typeof navLinks)[number]["slug"];
 
+/** Nombre que muestra el telón al navegar a cada ruta */
+export const routeLabels: Record<string, string> = {
+  "/": "Inicio",
+  "/noticias": "Noticias",
+  "/donaciones": "Donaciones",
+  "/voluntariado": "Voluntariado",
+  "/centros-de-acopio": "Centros de acopio",
+  "/desaparecidos": "Desaparecidos",
+  "/donar": "Donar",
+  "/necesito-ayuda": "Necesito ayuda",
+  "/portal": "Mi portal",
+};
+
 export const emergencyLine = { label: "Emergencias", number: "123" };
 
 export const dataNote = "Cifras oficiales de la UNGRD con corte al 10 de octubre de 2026";
@@ -451,62 +464,3 @@ export const sources = [
   "Infobae (14 de agosto de 2026). Cruz Roja aclaró qué donaciones necesitan las víctimas del terremoto y qué no",
   "Blu Radio (12 de marzo de 2024). Conclusiones de la Contraloría por caso carrotanques para La Guajira",
 ];
-
-/* Páginas de sección (en construcción) */
-
-export type SectionPage = {
-  title: string;
-  description: string;
-  photo?: Photo;
-  /** nombre del <ViewTransition> compartido con el hero */
-  morph?: NavSlug;
-};
-
-export const sectionPages = {
-  noticias: {
-    title: "Noticias",
-    description: "Cifras oficiales y novedades del terremoto, zona por zona.",
-    photo: photos.noticias,
-    morph: "noticias",
-  },
-  donaciones: {
-    title: "Donaciones",
-    description: "Las necesidades de cada zona y el recorrido de cada donación hasta su entrega.",
-    photo: photos.donaciones,
-    morph: "donaciones",
-  },
-  voluntariado: {
-    title: "Voluntariado",
-    description: "Turnos abiertos en centros de acopio y puntos de entrega cerca de ti.",
-    photo: photos.voluntariado,
-    morph: "voluntariado",
-  },
-  "centros-de-acopio": {
-    title: "Centros de acopio",
-    description: "Dónde queda cada centro, qué recibe hoy y cuánta capacidad le queda.",
-    photo: photos.centros,
-    morph: "centros-de-acopio",
-  },
-  desaparecidos: {
-    title: "Desaparecidos",
-    description: "Reportes verificados de personas desaparecidas y cómo avisar si sabes algo.",
-    photo: photos.desaparecidos,
-    morph: "desaparecidos",
-  },
-  donar: {
-    title: "Donar",
-    description: "Elige el destino de tu aporte y recibe el registro de su entrega.",
-    photo: photos.ayudaDinero,
-  },
-  "necesito-ayuda": {
-    title: "Necesito ayuda",
-    description: "Registra lo que necesita tu familia o tu comunidad para que la ayuda llegue.",
-    photo: photos.ayudaNecesidad,
-  },
-  portal: {
-    title: "Mi portal",
-    description: "Tus donaciones, tus turnos de voluntariado y tus reportes en un solo lugar.",
-  },
-} satisfies Record<string, SectionPage>;
-
-export type SectionKey = keyof typeof sectionPages;

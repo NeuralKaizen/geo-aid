@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { NavLink } from "@/components/transitions/nav-link";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, type Variants } from "motion/react";
 import { useLenis } from "lenis/react";
 import { Heart, Menu, Phone, Search, UserRound, X } from "lucide-react";
@@ -73,9 +73,9 @@ function OverlayNav({ onSearch, onMenu }: NavActions) {
               <Phone className="size-3.5" aria-hidden />
               {emergencyLine.label}: <strong className="font-semibold text-white">{emergencyLine.number}</strong>
             </a>
-            <Link href="/necesito-ayuda" transitionTypes={["nav-forward"]} className="transition-colors hover:text-white">
+            <NavLink href="/necesito-ayuda" className="transition-colors hover:text-white">
               ¿Tu comunidad necesita ayuda? Regístrala
-            </Link>
+            </NavLink>
           </div>
           <p className="truncate">{dataNote}</p>
         </div>
@@ -87,9 +87,9 @@ function OverlayNav({ onSearch, onMenu }: NavActions) {
           <ul className="flex items-center gap-1">
             {navLinks.map((link) => (
               <li key={link.slug}>
-                <Link
+                <NavLink
                   href={link.href}
-                  transitionTypes={["nav-forward"]}
+                 
                   className="group relative block px-3 py-2 text-[15px] font-medium text-white/85 transition-colors hover:text-white"
                 >
                   {link.label}
@@ -97,7 +97,7 @@ function OverlayNav({ onSearch, onMenu }: NavActions) {
                     aria-hidden
                     className="absolute inset-x-3 bottom-0.5 h-px origin-left scale-x-0 bg-maiz-400 transition-transform duration-500 ease-salida group-hover:scale-x-100"
                   />
-                </Link>
+                </NavLink>
               </li>
             ))}
           </ul>
@@ -135,9 +135,9 @@ function FloatingNav({ visible, active, onSearch, onMenu }: NavActions & { visib
               const isActive = link.slug === active;
               return (
                 <li key={link.slug}>
-                  <Link
+                  <NavLink
                     href={link.href}
-                    transitionTypes={["nav-forward"]}
+                   
                     aria-current={isActive ? "page" : undefined}
                     onMouseEnter={() => setHovered(link.slug)}
                     onFocus={() => setHovered(link.slug)}
@@ -155,7 +155,7 @@ function FloatingNav({ visible, active, onSearch, onMenu }: NavActions & { visib
                       />
                     )}
                     {link.label}
-                  </Link>
+                  </NavLink>
                 </li>
               );
             })}
@@ -179,9 +179,9 @@ function HeaderActions({ tone, onSearch, onMenu }: NavActions & { tone: "light" 
       <button type="button" onClick={onSearch} aria-label="Buscar (Ctrl K)" className={base}>
         <Search className="size-[19px]" aria-hidden />
       </button>
-      <Link href="/portal" transitionTypes={["nav-forward"]} aria-label="Mi portal" className={base}>
+      <NavLink href="/portal" aria-label="Mi portal" className={base}>
         <UserRound className="size-[19px]" aria-hidden />
-      </Link>
+      </NavLink>
       <DonateLink tone={tone} className="ml-2 hidden sm:inline-flex" />
       <button type="button" onClick={onMenu} aria-label="Abrir menú" className={`${base} lg:hidden`}>
         <Menu className="size-5" aria-hidden />
@@ -196,14 +196,14 @@ export function DonateLink({ tone, className = "" }: { tone: "light" | "dark"; c
       ? "bg-white text-bosque-800 hover:bg-bosque-50"
       : "bg-bosque-800 text-white hover:bg-bosque-700";
   return (
-    <Link
+    <NavLink
       href="/donar"
-      transitionTypes={["nav-forward"]}
+     
       className={`group h-11 items-center gap-2 rounded-full px-5 text-[15px] font-semibold transition-colors duration-300 ${colors} ${className}`}
     >
       <Heart className="size-4 transition-transform duration-500 ease-salida group-hover:scale-125 group-hover:fill-current" aria-hidden />
       Donar
-    </Link>
+    </NavLink>
   );
 }
 
@@ -260,14 +260,14 @@ function MobileMenu({ open, onClose, active }: { open: boolean; onClose: () => v
           <motion.ul variants={menuList} initial="closed" animate="open" exit="closed" className="mt-10 flex flex-col">
             {navLinks.map((link) => (
               <motion.li key={link.slug} variants={menuItem} className="border-b border-white/10">
-                <Link
+                <NavLink
                   href={link.href}
                   onClick={onClose}
                   aria-current={link.slug === active ? "page" : undefined}
                   className="flex items-center justify-between py-4 font-display text-[2rem] font-medium tracking-[-0.03em] aria-[current=page]:text-maiz-400"
                 >
                   {link.label}
-                </Link>
+                </NavLink>
               </motion.li>
             ))}
           </motion.ul>
@@ -278,14 +278,14 @@ function MobileMenu({ open, onClose, active }: { open: boolean; onClose: () => v
             exit={{ opacity: 0, transition: { duration: 0.15 } }}
             className="mt-auto flex flex-col gap-4 pt-10"
           >
-            <Link
+            <NavLink
               href="/donar"
               onClick={onClose}
               className="flex h-14 items-center justify-center gap-2 rounded-full bg-white text-lg font-semibold text-bosque-800"
             >
               <Heart className="size-5" aria-hidden />
               Donar
-            </Link>
+            </NavLink>
             <a href={`tel:${emergencyLine.number}`} className="flex items-center justify-center gap-2 text-white/75">
               <Phone className="size-4" aria-hidden />
               {emergencyLine.label}: <strong className="text-white">{emergencyLine.number}</strong>
