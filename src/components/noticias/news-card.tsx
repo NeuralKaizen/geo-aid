@@ -3,18 +3,20 @@
 import Image from "next/image";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
+import { HelpPanel } from "@/components/noticias/help-options";
 import { serif } from "@/components/noticias/fonts";
 import { ExampleTag } from "@/components/ui/form";
 import { temas, type Noticia } from "@/content/noticias";
 import { easeSalida } from "@/lib/motion";
 
 /*
- * Tarjetas de noticia. Toda la tarjeta se puede tocar: el titular es un botón cuyo ::after cubre la tarjeta, así la
- * tarjeta sigue siendo un <article> con su encabezado (un <button> no puede contener encabezados).
+ * Cada noticia es una fila: lo que pasó a la izquierda y, al lado, cómo ayudar. En móvil la ayuda queda debajo.
+ * El titular es un botón cuyo ::after cubre solo la columna de la noticia: las formas de ayudar son enlaces propios y
+ * un enlace no puede ir dentro de otro.
  */
 
 const cover =
-  "text-left after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-maiz-400";
+  "text-left after:absolute after:-inset-2 after:rounded-[20px] after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-maiz-400";
 
 /** De dónde viene: el medio, "Ejemplo" o el diagnóstico del proyecto. */
 export function Origin({ noticia, ejemplo }: { noticia: Noticia; ejemplo: boolean }) {
@@ -35,114 +37,84 @@ function Meta({ noticia }: { noticia: Noticia }) {
   );
 }
 
-/** Sin foto, la tarjeta muestra la fecha en grande: así el ritmo de la grilla se mantiene. */
-function DatePanel({ noticia, size }: { noticia: Noticia; size: "lead" | "card" }) {
-  const [day, month] = noticia.fecha.split(" ");
-  return (
-    <div
-      className={`relative flex flex-col justify-end overflow-hidden bg-bosque-900 text-white ${
-        size === "lead" ? "min-h-[16rem] p-8" : "h-36 p-5"
-      }`}
-    >
-      <span aria-hidden className="absolute -right-6 -top-10 font-display text-[11rem] font-semibold leading-none text-white/[0.04]">
-        {day}
-      </span>
-      <span className={`${serif} font-medium leading-none tracking-[-0.03em] ${size === "lead" ? "text-[5.5rem]" : "text-[3.25rem]"}`}>
-        {day}
-      </span>
-      <span className="mt-1 text-[13px] font-semibold uppercase tracking-[0.16em] text-maiz-400">{month}</span>
-    </div>
-  );
-}
-
-function Photo({ noticia, sizes, className = "" }: { noticia: Noticia; sizes: string; className?: string }) {
-  if (!noticia.foto) return null;
-  return (
-    <div className={`relative overflow-hidden ${className}`}>
-      <Image
-        src={noticia.foto.src}
-        alt={noticia.foto.alt}
-        fill
-        sizes={sizes}
-        className="object-cover transition-transform duration-700 ease-salida group-hover:scale-[1.04]"
-        style={{ objectPosition: noticia.foto.position }}
-      />
-      <span className="absolute bottom-3 left-3 rounded-full bg-black/45 px-2.5 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
-        Foto ilustrativa
-      </span>
-    </div>
-  );
-}
-
 const enter = {
   initial: { opacity: 0, y: 18 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, scale: 0.97, transition: { duration: 0.2 } },
+  exit: { opacity: 0, scale: 0.98, transition: { duration: 0.2 } },
   transition: { duration: 0.6, ease: easeSalida },
 };
 
-/** La noticia más reciente, a lo ancho. */
-export function LeadStory({ noticia, ejemplo, onOpen }: { noticia: Noticia; ejemplo: boolean; onOpen: () => void }) {
-  return (
-    <motion.article
-      layout
-      {...enter}
-      className="group relative grid overflow-hidden rounded-[28px] bg-white ring-1 ring-linea transition-shadow duration-500 hover:shadow-[0_30px_60px_-40px_rgba(6,39,36,0.5)] lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]"
-    >
-      {noticia.foto ? (
-        <Photo noticia={noticia} sizes="(min-width: 1024px) 58vw, 100vw" className="min-h-[16rem] lg:min-h-[24rem]" />
-      ) : (
-        <DatePanel noticia={noticia} size="lead" />
-      )}
-      <div className="flex flex-col p-6 sm:p-8 lg:p-10">
-        <p className="mb-4 inline-flex w-fit rounded-full bg-maiz-100 px-3 py-1 text-[12px] font-semibold text-maiz-800">Lo más reciente</p>
-        <Meta noticia={noticia} />
-        <h3 className={`${serif} mt-3 text-[clamp(1.7rem,2.6vw,2.4rem)] font-medium leading-[1.08] tracking-[-0.015em] text-tinta text-balance`}>
-          <button type="button" onClick={onOpen} className={`${cover} after:rounded-[28px]`}>
-            {noticia.titular}
-          </button>
-        </h3>
-        <p className="mt-4 text-[16px] leading-relaxed text-niebla">{noticia.resumen}</p>
-        <p className="mt-auto flex items-center justify-between gap-4 pt-8 text-[13px] text-niebla">
-          <Origin noticia={noticia} ejemplo={ejemplo} />
-          <span className="inline-flex items-center gap-1.5 font-semibold text-bosque-700">
-            Leer la noticia
-            <ArrowRight className="size-4 transition-transform duration-500 ease-salida group-hover:translate-x-1" aria-hidden />
-          </span>
-        </p>
-      </div>
-    </motion.article>
-  );
-}
+export function NewsRow({
+  noticia,
+  ejemplo,
+  lead = false,
+  onOpen,
+}: {
+  noticia: Noticia;
+  ejemplo: boolean;
+  /** la más reciente: con la foto grande y el titular más grande */
+  lead?: boolean;
+  onOpen: () => void;
+}) {
+  const foto = noticia.foto;
+  const layout = foto
+    ? lead
+      ? "grid gap-6 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] sm:items-center xl:grid-cols-[16rem_minmax(0,1fr)]"
+      : "grid gap-5 sm:grid-cols-[8rem_minmax(0,1fr)] sm:items-start"
+    : "";
 
-export function NewsCard({ noticia, ejemplo, onOpen }: { noticia: Noticia; ejemplo: boolean; onOpen: () => void }) {
   return (
     <motion.article
       layout
       {...enter}
-      className="group relative flex flex-col overflow-hidden rounded-[24px] bg-white ring-1 ring-linea transition-shadow duration-500 hover:shadow-[0_26px_50px_-36px_rgba(6,39,36,0.5)]"
+      className="grid gap-5 border-t border-linea py-8 first:border-t-0 first:pt-2 lg:grid-cols-[minmax(0,1fr)_27rem] lg:items-center lg:gap-12 xl:grid-cols-[minmax(0,1fr)_29rem]"
     >
-      {noticia.foto ? (
-        <Photo noticia={noticia} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw" className="h-44" />
-      ) : (
-        <DatePanel noticia={noticia} size="card" />
-      )}
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <Meta noticia={noticia} />
-        <h3 className={`${serif} mt-2.5 text-[21px] font-medium leading-[1.15] tracking-[-0.01em] text-tinta`}>
-          <button type="button" onClick={onOpen} className={`${cover} after:rounded-[24px]`}>
-            {noticia.titular}
-          </button>
-        </h3>
-        <p className="mt-2 line-clamp-2 text-[14px] leading-relaxed text-niebla">{noticia.resumen}</p>
-        <p className="mt-auto flex items-center justify-between gap-3 pt-5 text-[12.5px] text-niebla">
-          <Origin noticia={noticia} ejemplo={ejemplo} />
-          <span className="inline-flex items-center gap-1 font-semibold text-bosque-700">
-            Leer
-            <ArrowRight className="size-3.5 transition-transform duration-500 ease-salida group-hover:translate-x-0.5" aria-hidden />
-          </span>
-        </p>
+      <div className={`group relative ${layout}`}>
+        {foto && (
+          <div
+            className={`relative overflow-hidden ${lead ? "aspect-[4/3] rounded-[22px]" : "hidden aspect-square rounded-[18px] sm:block"}`}
+          >
+            <Image
+              src={foto.src}
+              alt={foto.alt}
+              fill
+              sizes={lead ? "(min-width: 640px) 17rem, 100vw" : "8rem"}
+              className="object-cover transition-transform duration-700 ease-salida group-hover:scale-[1.04]"
+              style={{ objectPosition: foto.position }}
+            />
+            {lead && (
+              <span className="absolute bottom-3 left-3 rounded-full bg-black/45 px-2.5 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
+                Foto ilustrativa
+              </span>
+            )}
+          </div>
+        )}
+        <div className="min-w-0">
+          {lead && (
+            <p className="mb-3 inline-flex rounded-full bg-maiz-100 px-3 py-1 text-[12px] font-semibold text-maiz-800">Lo más reciente</p>
+          )}
+          <Meta noticia={noticia} />
+          <h3
+            className={`${serif} mt-2.5 font-medium leading-[1.1] tracking-[-0.012em] text-tinta transition-colors duration-300 group-hover:text-bosque-700 text-balance ${
+              lead ? "text-[clamp(1.7rem,2.3vw,2.1rem)]" : "text-[clamp(1.4rem,2vw,1.7rem)]"
+            }`}
+          >
+            <button type="button" onClick={onOpen} className={cover}>
+              {noticia.titular}
+            </button>
+          </h3>
+          <p className="mt-3 max-w-[38rem] text-[15.5px] leading-relaxed text-niebla">{noticia.resumen}</p>
+          <p className="mt-4 flex max-w-[38rem] items-center justify-between gap-4 text-[13px] text-niebla">
+            <Origin noticia={noticia} ejemplo={ejemplo} />
+            <span className="inline-flex items-center gap-1.5 font-semibold text-bosque-700">
+              Leer la noticia
+              <ArrowRight className="size-4 transition-transform duration-500 ease-salida group-hover:translate-x-1" aria-hidden />
+            </span>
+          </p>
+        </div>
       </div>
+
+      <HelpPanel ayudas={noticia.ayudas} />
     </motion.article>
   );
 }

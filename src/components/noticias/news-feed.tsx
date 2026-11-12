@@ -2,32 +2,31 @@
 
 import { useState } from "react";
 import { AnimatePresence, LayoutGroup } from "motion/react";
-import { LeadStory, NewsCard } from "@/components/noticias/news-card";
+import { NewsRow } from "@/components/noticias/news-card";
 import { serif } from "@/components/noticias/fonts";
 import { FilterChip } from "@/components/ui/form";
 import { eyebrow } from "@/components/ui/styles";
 import { temas, type Emergencia, type Noticia, type Tema } from "@/content/noticias";
 
 /**
- * Las noticias de la emergencia, de la más reciente a la más antigua. La primera va a lo ancho; las demás en grilla.
- * Los filtros por tema solo muestran los temas que tiene esta emergencia.
+ * Las noticias de la emergencia, de la más reciente a la más antigua, cada una con sus formas de ayudar al lado. La
+ * primera lleva la foto grande. Los filtros por tema solo muestran los temas que tiene esta emergencia.
  */
 export function NewsFeed({ emergencia, onOpen }: { emergencia: Emergencia; onOpen: (noticia: Noticia) => void }) {
   const [tema, setTema] = useState<Tema | null>(null);
   const presentes = (Object.keys(temas) as Tema[]).filter((id) => emergencia.noticias.some((noticia) => noticia.tema === id));
   const visibles = tema ? emergencia.noticias.filter((noticia) => noticia.tema === tema) : emergencia.noticias;
-  const [lead, ...rest] = visibles;
 
   return (
     <section aria-labelledby="ultimas-noticias" className="mx-auto mt-20 max-w-[1240px] px-5 sm:px-8 lg:mt-28 lg:px-10">
-      <div className="flex flex-col gap-5 border-t-2 border-tinta pt-5 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-col gap-5 border-t-2 border-tinta pt-5">
         <div>
           <p className={eyebrow}>Últimas noticias</p>
           <h2
             id="ultimas-noticias"
             className={`${serif} mt-2 text-[clamp(2rem,3.4vw,2.85rem)] font-medium leading-[1.04] tracking-[-0.02em] text-tinta`}
           >
-            {emergencia.noticias.length === 1 ? "Una noticia en el archivo" : `${emergencia.noticias.length} noticias, con su fuente`}
+            Lo que pasó y cómo puedes ayudar
           </h2>
         </div>
         {presentes.length > 1 && (
@@ -53,19 +52,18 @@ export function NewsFeed({ emergencia, onOpen }: { emergencia: Emergencia; onOpe
       </p>
 
       <LayoutGroup>
-        <div className="mt-8 flex flex-col gap-5">
+        <div className="mt-6 flex flex-col">
           <AnimatePresence mode="popLayout" initial={false}>
-            {lead && <LeadStory key={lead.id} noticia={lead} ejemplo={emergencia.ejemplo} onOpen={() => onOpen(lead)} />}
+            {visibles.map((noticia, index) => (
+              <NewsRow
+                key={noticia.id}
+                noticia={noticia}
+                ejemplo={emergencia.ejemplo}
+                lead={index === 0}
+                onOpen={() => onOpen(noticia)}
+              />
+            ))}
           </AnimatePresence>
-          {rest.length > 0 && (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              <AnimatePresence mode="popLayout" initial={false}>
-                {rest.map((noticia) => (
-                  <NewsCard key={noticia.id} noticia={noticia} ejemplo={emergencia.ejemplo} onOpen={() => onOpen(noticia)} />
-                ))}
-              </AnimatePresence>
-            </div>
-          )}
         </div>
       </LayoutGroup>
     </section>

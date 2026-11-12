@@ -6,10 +6,10 @@ import { AnimatePresence, motion } from "motion/react";
 import { useLenis } from "lenis/react";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { serif } from "@/components/noticias/fonts";
+import { HelpPanel } from "@/components/noticias/help-options";
 import { Origin } from "@/components/noticias/news-card";
-import { NavLink } from "@/components/transitions/nav-link";
 import { ExampleTag } from "@/components/ui/form";
-import { button, eyebrow } from "@/components/ui/styles";
+import { eyebrow } from "@/components/ui/styles";
 import { temas, type Emergencia, type Noticia } from "@/content/noticias";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { easeEntrada, easeSalida } from "@/lib/motion";
@@ -174,13 +174,9 @@ export function NewsDrawer({
                 <section className="mt-6 rounded-[22px] bg-bosque-900 p-6 text-white">
                   <h3 className="text-[12px] font-semibold uppercase tracking-[0.14em] text-maiz-400">Qué significa para ti</h3>
                   <p className="mt-2 text-[16px] leading-relaxed text-white/85">{shown.significa}</p>
-                  {shown.enlace && (
-                    <NavLink href={shown.enlace.href} onClick={closeNow} className={`${button({ variant: "accent", size: "sm" })} mt-5`}>
-                      {shown.enlace.label}
-                      <ArrowRight className="size-4 transition-transform duration-500 ease-salida group-hover:translate-x-1" aria-hidden />
-                    </NavLink>
-                  )}
                 </section>
+
+                <HelpPanel ayudas={shown.ayudas} onNavigate={closeNow} className="mt-4" />
 
                 <section className="mt-7 border-t border-linea pt-5">
                   <h3 className={eyebrow}>Fuente</h3>

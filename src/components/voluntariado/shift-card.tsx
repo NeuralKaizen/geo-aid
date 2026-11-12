@@ -17,6 +17,7 @@ export function ShiftCard({
   mine,
   started,
   onTake,
+  highlighted = false,
 }: {
   shift: Shift;
   /** cupos tomados en vivo (incluye el tuyo) */
@@ -25,6 +26,8 @@ export function ShiftCard({
   /** turno de hoy que ya empezó */
   started: boolean;
   onTake: (shift: Shift) => void;
+  /** el turno que la persona vio en una noticia */
+  highlighted?: boolean;
 }) {
   const task = taskById[shift.task];
   const Icon = task.icon;
@@ -49,9 +52,14 @@ export function ShiftCard({
       <div className="pb-4">
         <div
           className={`rounded-[24px] bg-white p-5 ring-1 transition-shadow duration-500 sm:p-6 ${
-            mine ? "ring-2 ring-bosque-600" : "ring-linea"
+            mine ? "ring-2 ring-bosque-600" : highlighted ? "ring-2 ring-maiz-400" : "ring-linea"
           }`}
         >
+          {highlighted && !mine && (
+            <p className="mb-3 inline-flex rounded-full bg-maiz-100 px-2.5 py-0.5 text-[12px] font-semibold text-maiz-800">
+              El turno que viste en Noticias
+            </p>
+          )}
           <p className="mb-3 flex items-center gap-1.5 text-[13px] font-medium text-niebla sm:hidden">
             <Clock className="size-3.5" aria-hidden />
             {horario(shift.start)} · {SHIFT_HOURS} horas

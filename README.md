@@ -20,7 +20,7 @@ Cada página tiene su propia forma según lo que trata, sin dejar de parecer Geo
 
 | Ruta | Qué es | La pieza central |
 | --- | --- | --- |
-| `/noticias` | **Portal de emergencias.** Puede seguir varias crisis a la vez, con titulares en serif (Newsreader, solo en esta página). | Las emergencias como pestañas, cada una con su estado y su contador de días. La elegida muestra qué está pasando, sus cifras con fuente, cómo ayudar, sus noticias por tema y una línea de días donde cada noticia es un punto. Cada noticia se abre completa, con qué significa para ti y su fuente. El enlace guarda la emergencia y la noticia abiertas (`?emergencia=` y `?noticia=`). |
+| `/noticias` | **Lo que pasó y cómo puedes ayudar.** Puede seguir varias crisis a la vez, con titulares en serif (Newsreader, solo en esta página). | Las emergencias como pestañas, cada una con su estado y desde cuándo. La elegida muestra qué está pasando, sus cifras con fuente y sus noticias por tema. Al lado de cada noticia van dos o tres formas de ayudar: donar a una zona, tomar un turno, llevar algo a un punto que todavía recibe o, si la noticia toca a alguien afectado, contar qué le falta. Cada una lleva a su página con la zona, el turno o el punto ya elegido. Cada noticia se abre completa, con qué significa para ti y su fuente. El enlace guarda la emergencia y la noticia abiertas (`?emergencia=` y `?noticia=`). |
 | `/donaciones` | **Tablero de necesidades.** Lo que le falta a cada zona y cuánto ya llegó. | 14 zonas con urgencia por cobertura, filtros por tipo y departamento, y orden que reacomoda las tarjetas. También "A dónde va cada peso" y el buscador de seguimiento por código. |
 | `/donar` | **Un pago tranquilo.** Cuatro pasos: destino, monto, datos y método. | Un recibo de papel que se llena mientras eliges y, al confirmar, se imprime como comprobante con su código. Lee `?zona=`, `?destino=` y `?monto=`. |
 | `/voluntariado` | **Una agenda viva.** Los próximos 7 días desde hoy. | Turnos en una línea de tiempo con los cupos como trazos. "Tomar este turno" abre un panel con el formulario y termina en la vista previa del mensaje de texto. |
@@ -28,6 +28,14 @@ Cada página tiene su propia forma según lo que trata, sin dejar de parecer Geo
 | `/desaparecidos` | **Un registro sereno.** Poco color, mucho aire, sin fotos de personas: la foto del hero llega en color y se asienta en gris. | Buscador con filtros, "¿Sabes algo?" en un diálogo y el reporte de una persona en tres pasos. Explica cómo se verifica cada reporte y qué nunca se publica. |
 | `/necesito-ayuda` | **Una pregunta a la vez.** Para alguien con miedo, en un celular y con mala señal. | Asistente sobre fondo oscuro con letra y botones grandes, el 123 siempre visible, ubicación del teléfono, revisión con "Editar" y un radicado al final. |
 | `/portal` | **Tu historia de ayuda.** Panel personal de Laura, una usuaria de ejemplo. | Resumen con cifras, y pestañas de donaciones con su seguimiento, turnos que se pueden cancelar, y necesidades y reportes. |
+
+### Las noticias llevan a ayudar
+
+Las formas de ayudar de cada noticia (`src/components/noticias/help-options.tsx`) nombran una zona, una tarea o un punto, y leen sus datos de Donaciones, Voluntariado y Centros: lo que falta y los cupos coinciden con esas páginas. El turno se elige al abrir la página: es el próximo de esa tarea que tiene cupo y todavía no empezó. Los enlaces llegan con lo elegido:
+
+- `/donar?zona=<zona>` o `/donar?destino=agua|alimentos|refugio`
+- `/voluntariado?turno=<turno>#agenda`: la agenda abre en el día del turno y lo marca.
+- `/centros-de-acopio?ciudad=<ciudad>&punto=<punto>#resultados`: abre en esa ciudad con el punto elegido.
 
 ### Lo que haces en una página aparece en Mi portal
 
@@ -53,6 +61,7 @@ Lo **de ejemplo** está marcado como tal en cada página:
 - Los reportes de personas desaparecidas (nombres ficticios, sin fotos) y las cifras de reencuentros.
 - La historia de Laura en Mi portal y el seguimiento de la donación GA-24817.
 - Las emergencias de lluvias en el Pacífico e incendios en la Orinoquía, con sus cifras y noticias.
+- Las formas de ayudar que acompañan cada noticia (salen de los datos de ejemplo de Donaciones, Voluntariado y Centros).
 - Las tarjetas del hero, salvo la de noticias.
 
 Cada flujo donde alguien pide ayuda, reporta, se inscribe o dona dice antes de enviar y en la confirmación que es un prototipo, que la información no llega a ninguna entidad y que en una emergencia hay que llamar al 123.
@@ -89,7 +98,7 @@ Todo lo que se mueve con el scroll usa propiedades que compone la GPU (`transfor
 
 - La tarjeta del hero es 56 px más grande que la pantalla y tiene el radio fijo: al encogerse con `scale`, las esquinas redondeadas aparecen solas, sin animar `border-radius`. La pantalla de carga y el telón usan el mismo truco.
 - La cortina entre fotos son dos capas que se desplazan en sentido contrario en vez de un `clip-path`.
-- Lo que depende de la fecha de hoy (la agenda de voluntariado, el contador de días) se calcula en el navegador, porque la página se prerenderiza una sola vez.
+- Lo que depende de la fecha de hoy (la agenda de voluntariado, el próximo turno de cada noticia, la fecha de la edición) se calcula en el navegador, porque la página se prerenderiza una sola vez.
 
 ## Créditos
 

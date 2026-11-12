@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { CalendarSearch } from "lucide-react";
 import { ExampleTag } from "@/components/ui/form";
@@ -28,6 +28,13 @@ const entry: Variants = {
 
 const cityCount = new Set(shiftTemplates.map((template) => template.city)).size;
 
+const noop = () => () => {};
+
+/** `?turno=<id>` cuando se llega desde una noticia: la agenda abre en ese día y marca el turno. Solo en el navegador. */
+function useTurnoFromUrl() {
+  return useSyncExternalStore(noop, () => new URLSearchParams(window.location.search).get("turno"), () => null);
+}
+
 /**
  * La agenda viva: 7 días desde hoy, filtros y los turnos del día elegido. Todo depende de la fecha de hoy, que solo
  * existe en el navegador, así que en el servidor se ve un esqueleto con la misma forma.
@@ -36,12 +43,16 @@ export function Agenda() {
   const todayKey = useTodayKey();
   const activity = useActivity();
   const hour = useCurrentHour();
-  const [selected, setSelected] = useState(0);
+  const wanted = useTurnoFromUrl();
+  // null: la persona no ha elegido día; manda el del turno que trae la URL, o hoy
+  const [chosen, setChosen] = useState<number | null>(null);
   const [filters, setFilters] = useState<Filters>(noFilters);
   const [taking, setTaking] = useState<Shift | null>(null);
 
   const mine = useMemo(() => takenByMe(activity), [activity]);
   const week = useMemo(() => (todayKey ? weekFrom(todayKey).map((day) => ({ day, shifts: shiftsOn(day) })) : null), [todayKey]);
+  const wantedDay = week && wanted ? week.findIndex(({ shifts }) => shifts.some((shift) => shift.id === wanted)) : -1;
+  const selected = chosen ?? Math.max(0, wantedDay);
 
   const passes = (shift: Shift) =>
     (filters.city === null || shift.city === filters.city) &&
@@ -69,13 +80,14 @@ export function Agenda() {
         <AgendaBody
           week={week}
           selected={selected}
-          onSelect={setSelected}
+          onSelect={setChosen}
           filters={filters}
           onFilters={setFilters}
           passes={passes}
           mine={mine}
           hour={hour}
           onTake={setTaking}
+          highlight={wanted}
         />
       )}
 
@@ -99,6 +111,7 @@ function AgendaBody({
   mine,
   hour,
   onTake,
+  highlight,
 }: {
   week: { day: ReturnType<typeof weekFrom>[number]; shifts: Shift[] }[];
   selected: number;
@@ -109,6 +122,8 @@ function AgendaBody({
   mine: ReturnType<typeof takenByMe>;
   hour: number | null;
   onTake: (shift: Shift) => void;
+  /** id de la plantilla del turno que se vio en una noticia */
+  highlight: string | null;
 }) {
   const summaries: DaySummary[] = week.map(({ day, shifts }) => {
     const visible = shifts.filter(passes);
@@ -206,6 +221,7 @@ function AgendaBody({
                             mine={mine.has(shift.shiftId)}
                             started={started(shift)}
                             onTake={onTake}
+                            highlighted={shift.id === highlight}
                           />
                         </motion.div>
                       ))}

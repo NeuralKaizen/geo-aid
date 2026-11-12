@@ -3,7 +3,6 @@
 import { useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Alerts } from "@/components/noticias/alerts";
-import { CrisisAxis } from "@/components/noticias/crisis-axis";
 import { CrisisOverview } from "@/components/noticias/crisis-overview";
 import { CrisisSwitcher } from "@/components/noticias/crisis-switcher";
 import { NewsDrawer } from "@/components/noticias/news-drawer";
@@ -74,7 +73,6 @@ export function NewsPortal() {
         >
           <CrisisOverview emergencia={emergencia} />
           <NewsFeed emergencia={emergencia} onOpen={open} />
-          {emergencia.noticias.length > 1 && <CrisisAxis emergencia={emergencia} onOpen={open} />}
         </motion.div>
       </AnimatePresence>
 

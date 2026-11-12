@@ -1,6 +1,6 @@
 "use client";
 
-import { daysBetween, fromKey, useTodayKey } from "@/lib/dates";
+import { fromKey, useTodayKey } from "@/lib/dates";
 import { fechaLarga } from "@/lib/format";
 
 /*
@@ -24,11 +24,4 @@ export function EditionDate() {
   const date = fromKey(today);
   const text = `${fechaLarga(date)} de ${date.getFullYear()}`;
   return <time dateTime={today}>{text.charAt(0).toUpperCase() + text.slice(1)}</time>;
-}
-
-/** "Día 93": días desde el inicio de una emergencia (el día del inicio es el día 0). */
-export function DaySince({ iso }: { iso: string }) {
-  const today = useTodayKey();
-  if (!today) return <Skeleton width="w-12" tone="dark" />;
-  return <span>Día {Math.max(0, daysBetween(fromKey(iso), fromKey(today)))}</span>;
 }

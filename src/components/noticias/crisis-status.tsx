@@ -1,5 +1,4 @@
-import { estados, type Emergencia, type Estado } from "@/content/noticias";
-import { DaySince } from "@/components/noticias/edition-date";
+import { estados, type Estado } from "@/content/noticias";
 
 /* El color dice qué tan urgente es: rojo mientras hay respuesta en curso, maíz en alerta, verde en recuperación. */
 const tones: Record<Estado, { dot: string; text: string; ring: string }> = {
@@ -17,10 +16,4 @@ export function StatusPill({ estado }: { estado: Estado }) {
       {estados[estado]}
     </span>
   );
-}
-
-/** "Día 93" mientras la emergencia sigue abierta; si no, el texto fijo de la emergencia ("Controlados el 2 oct"). */
-export function CrisisSince({ emergencia }: { emergencia: Emergencia }) {
-  if (emergencia.estado === "activa" || emergencia.estado === "alerta") return <DaySince iso={emergencia.inicio} />;
-  return <span>{emergencia.desde}</span>;
 }

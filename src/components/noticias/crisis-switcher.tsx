@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion } from "motion/react";
-import { CrisisSince, StatusPill } from "@/components/noticias/crisis-status";
+import { StatusPill } from "@/components/noticias/crisis-status";
 import { serif } from "@/components/noticias/fonts";
 import { ExampleTag } from "@/components/ui/form";
 import { emergencias } from "@/content/noticias";
@@ -63,7 +63,7 @@ export function CrisisSwitcher({ selected, onSelect }: { selected: string; onSel
                 {emergencia.nombre}
               </span>
               <span className="mb-5 mt-1.5 block text-[13px] text-niebla">
-                {emergencia.lugar} · <CrisisSince emergencia={emergencia} />
+                {emergencia.lugar} · {emergencia.desde}
               </span>
               <span className="mt-auto flex items-baseline gap-2 border-t border-linea pt-3.5">
                 <span className={`${serif} text-[28px] font-medium leading-none tracking-[-0.02em] text-tinta`}>
