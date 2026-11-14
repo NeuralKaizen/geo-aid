@@ -18,7 +18,7 @@
 - Solo se animan `transform` y `opacity`, con las curvas de `src/lib/motion.ts`; las entradas ocurren una vez (`viewport={{ once: true }}`) y respetan `prefers-reduced-motion`.
 - Nada de animaciones abstractas o decorativas: solo se mueve contenido real.
 - Cada hoja: `relative z-10 -mt-10 rounded-t-[36px]`, y nunca el mismo fondo que su vecina. Fondos: Cómo ayudar `bg-papel` → Falta hoy `bg-white` → Seguimiento `bg-bosque-900` → Si te pasó a ti `bg-maiz-50` → Lo último `bg-white` → Para quién es `bg-papel`.
-- Las hojas nuevas no fijan el scroll y caben en más o menos una pantalla de 1280×720. Bajo 1024 px, una columna.
+- Cada hoja nueva lleva un movimiento propio ligado al scroll (puede fijarse, como "Cómo ayudar" y el seguimiento) y se nota al subir sobre la anterior; una rejilla de tarjetas que solo aparece fue rechazada. Bajo 1024 px, una columna sin fijar.
 - Enlaces entre secciones con `NavLink` (`@/components/transitions/nav-link`), no con el morph del hero.
 - Textos en español, cortos y directos. Datos de ejemplo llevan `ExampleTag` (`@/components/ui/form`).
 - Servidor de prueba en el puerto 3211 (el 3210 es de otro proceso del usuario; no matarlo). Rendimiento y revisión final sobre `npm run build` + `npx next start -p 3211`.

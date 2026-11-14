@@ -16,3 +16,10 @@ Las dos fotos de la Agencia ANDES (`noticias.jpg` y `ayuda-insumos.jpg`) se reco
 | `public/images/ayuda-voluntario.jpg` | Cpl. Lydia Gordon, U.S. Marine Corps | Dominio público | [MRF-D and ADF load supplies for Timor Leste](https://commons.wikimedia.org/wiki/File:MRF-D_and_ADF_load_supplies_for_Timor_Leste_(6608494).jpg) |
 | `public/images/ayuda-buscar.jpg` | DFID, UK Department for International Development | CC BY 2.0 | [John Ball and Darcy, his search and rescue dog](https://commons.wikimedia.org/wiki/File:John_Ball_and_Darcy,_his_search_and_rescue_dog_(17287716066).jpg) |
 | `public/images/ayuda-necesidad.jpg` | OCHA Colombia | CC BY-SA 2.0 | [Cruz Roja en Turbo](https://commons.wikimedia.org/wiki/File:Cruz_Roja_en_Turbo.jpg) |
+
+## Mapa del territorio (home, "Lo que más falta hoy")
+
+No son archivos del repositorio: se cargan desde servicios externos al abrir la página.
+
+- Imagen satelital: [Sentinel-2 cloudless 2020](https://s2maps.eu) por EOX IT Services GmbH (contiene datos Copernicus Sentinel modificados, 2020). Licencia CC BY-NC-SA 4.0, solo para uso no comercial.
+- Relieve: Terrain Tiles de Mapzen, alojados en AWS Open Data.

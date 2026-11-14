@@ -3,6 +3,7 @@ import { Audiences } from "@/components/audiences";
 import { HelpFab } from "@/components/help-fab";
 import { HowToHelp } from "@/components/help/how-to-help";
 import { HeroCarousel } from "@/components/hero/hero-carousel";
+import { UrgentNeeds } from "@/components/home/urgent-needs";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TrackingSection } from "@/components/tracking/tracking-section";
@@ -25,6 +26,7 @@ export default function Home() {
         </div>
         <ViewTransition enter={directional} exit={directional} default="none">
           <div>
+            <UrgentNeeds />
             <TrackingSection />
             <Audiences />
           </div>

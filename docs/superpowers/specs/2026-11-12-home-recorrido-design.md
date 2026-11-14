@@ -17,8 +17,9 @@ la estética y las animaciones propias de la plataforma.
 - Cada hoja del home presenta una parte real de la plataforma y termina en al menos una acción.
 - Las hojas nuevas se sienten parte del mismo sitio: mismas hojas apiladas con borde redondeado, misma tipografía,
   mismas curvas de animación (`src/lib/motion.ts`).
-- El home no se vuelve pesado de recorrer: las hojas nuevas caben, cada una, en más o menos una pantalla de escritorio y
-  no fijan el scroll.
+- Cada hoja nueva tiene su propio movimiento ligado al scroll, al nivel del hero, "Cómo ayudar" y el seguimiento. Una
+  rejilla de tarjetas que solo aparece no alcanza: el usuario rechazó la primera versión de "Lo que más falta hoy" por
+  eso ("3 cuadrados con info, súper básico", "ni siquiera existe animación de transición"). (Corregido el 12 nov.)
 
 ## Lo que no se hace
 
@@ -67,6 +68,15 @@ papel → blanco → bosque-900 → maiz-50 → blanco → papel.
 Los enlaces de las hojas nuevas usan `NavLink` (telón), no el morph del hero.
 
 ### 3. Lo que más falta hoy
+
+**Versión aprobada por el usuario (13 nov): el territorio.** Se rechazaron la rejilla de tarjetas y las tarjetas
+apiladas de color ("muy plano", "se ve demasiado IA"). Lo construido: la hoja es un mapa satelital con relieve del norte
+del Cauca (MapLibre, imagen Sentinel-2 de EOX y relieve de AWS, sin clave) fijo a la pantalla; la cámara baja a la
+primera zona mientras la hoja sube y vuela de zona en zona con el scroll. Un panel de vidrio a la izquierda muestra la
+zona al frente (urgencia, familias, lo que falta, barras, "Aportar a esta zona") y cada zona tiene su marca en el mapa.
+Por debajo de 1024 px o con movimiento reducido no se fija: mapa en bloque, pestañas por zona y el panel debajo. Código:
+`src/components/home/urgent-needs.tsx` y `territory-map.tsx`. Lo que sigue en este apartado es el diseño original; los
+datos y las acciones siguen siendo los mismos, la composición y el movimiento no.
 
 Muestra el tablero de Donaciones en pequeño.
 
